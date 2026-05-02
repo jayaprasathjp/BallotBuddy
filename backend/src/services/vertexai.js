@@ -1,19 +1,54 @@
 /**
  * Vertex AI (Gemini) Service
- * Handles all AI chat interactions for BallotBuddy.
- * Falls back to structured mock responses when API is unavailable.
+ * Handles all AI chat interactions for BallotBuddy using Google Vertex AI.
+ *
+ * Key features:
+ *  - Singleton VertexAI client to avoid repeated instantiation overhead
+ *  - In-memory response caching to reduce redundant API calls
+ *  - Graceful fallback to structured mock responses when the API is unavailable
+ *  - Multilingual support (English, Hindi, Tamil)
+ *
+ * @module services/vertexai
  */
-const logger = require('./logger');
 
-// Attempt to load Vertex AI SDK
+const logger = require('./logger');
+const cache = require('./cache');
+
+// ─── Lazy-load Vertex AI SDK ─────────────────────────────────────────────────
+/** @type {typeof import('@google-cloud/vertexai').VertexAI | undefined} */
 let VertexAI;
 try {
   ({ VertexAI } = require('@google-cloud/vertexai'));
 } catch (e) {
-  logger.warn('Vertex AI SDK not available, using mock mode');
+  logger.warn('Vertex AI SDK not available – falling back to mock mode');
 }
 
-const ELECTION_SYSTEM_PROMPT = `You are BallotBuddy AI, an expert, friendly, and accessible election assistant for Indian citizens. 
+// ─── Singleton client references (initialized once on first use) ──────────────
+/** @type {import('@google-cloud/vertexai').VertexAI | null} */
+let _vertexClient = null;
+
+/**
+ * Returns a memoized VertexAI client instance.
+ * Reads config from environment variables at call time.
+ *
+ * @returns {import('@google-cloud/vertexai').VertexAI}
+ */
+const getVertexClient = () => {
+  if (!_vertexClient) {
+    _vertexClient = new VertexAI({
+      project: process.env.GOOGLE_CLOUD_PROJECT,
+      location: process.env.VERTEX_AI_LOCATION || 'us-central1',
+    });
+    logger.info('Vertex AI client initialized', {
+      project: process.env.GOOGLE_CLOUD_PROJECT,
+      location: process.env.VERTEX_AI_LOCATION || 'us-central1',
+    });
+  }
+  return _vertexClient;
+};
+
+// ─── System prompt ────────────────────────────────────────────────────────────
+const ELECTION_SYSTEM_PROMPT = `You are BallotBuddy AI, an expert, friendly, and accessible election assistant for Indian citizens.
 Your role is to help users understand the democratic process, voter rights, and election procedures.
 
 ALWAYS respond in this exact JSON structure:
@@ -33,7 +68,18 @@ Guidelines:
 - Include document requirements when relevant
 - Be encouraging and positive about civic participation`;
 
-// Mock responses for demo/dev mode
+// ─── Mock responses ───────────────────────────────────────────────────────────
+/**
+ * @typedef {Object} AIResponse
+ * @property {string} explanation - Plain-language explanation
+ * @property {string[]} steps - Ordered steps for the user to follow
+ * @property {string} [timeline] - Timeline information
+ * @property {string[]} checklist - Checklist items
+ * @property {string[]} tips - Helpful tips
+ * @property {string[]} relatedTopics - Related topics to explore
+ */
+
+/** @type {Record<string, AIResponse>} */
 const MOCK_RESPONSES = {
   default: {
     explanation: 'Voting is your fundamental right as a citizen. The election process involves several important steps to ensure fair and transparent democracy in India.',
@@ -87,7 +133,10 @@ const MOCK_RESPONSES = {
 };
 
 /**
- * Get mock response based on query keywords
+ * Selects the most relevant mock response based on keyword matching.
+ *
+ * @param {string} userMessage - The user's input message
+ * @returns {AIResponse} The best-matching mock response
  */
 const getMockResponse = (userMessage) => {
   const msg = userMessage.toLowerCase();
@@ -98,36 +147,51 @@ const getMockResponse = (userMessage) => {
 };
 
 /**
- * Send a chat message to Vertex AI Gemini and get a structured response
- * @param {string} userMessage - The user's question
- * @param {Array} history - Previous conversation history
- * @param {string} language - Preferred language (en/hi/ta)
- * @returns {Object} Structured AI response
+ * Determines whether the mock AI mode should be used.
+ *
+ * @returns {{ useMock: boolean, reason: string }}
+ */
+const getMockStatus = () => {
+  if (!process.env.GOOGLE_CLOUD_PROJECT) return { useMock: true, reason: 'No Project ID configured' };
+  if (!VertexAI) return { useMock: true, reason: 'Vertex AI SDK not loaded' };
+  if (process.env.USE_MOCK_AI === 'true') return { useMock: true, reason: 'Forced by USE_MOCK_AI env var' };
+  return { useMock: false, reason: 'Live AI enabled' };
+};
+
+// ─── Public API ───────────────────────────────────────────────────────────────
+
+/**
+ * Sends a chat message to Vertex AI Gemini and returns a structured response.
+ * Responses are cached for 15 minutes by (message + language) to reduce
+ * latency and Vertex AI API costs for repeated queries.
+ *
+ * @param {string} userMessage - The user's question or request
+ * @param {Array<{role: 'user'|'model', content: string}>} [history=[]] - Prior conversation turns
+ * @param {'en'|'hi'|'ta'} [language='en'] - Preferred response language
+ * @returns {Promise<AIResponse>} Structured AI response object
  */
 const chat = async (userMessage, history = [], language = 'en') => {
-  const PROJECT_ID = process.env.GOOGLE_CLOUD_PROJECT;
-  const LOCATION = process.env.VERTEX_AI_LOCATION || 'us-central1';
   const MODEL = process.env.VERTEX_AI_MODEL || 'gemini-2.5-flash';
-  const USE_MOCK = process.env.USE_MOCK_AI === 'true' || !PROJECT_ID || !VertexAI;
+  const { useMock, reason } = getMockStatus();
 
-  logger.debug('Vertex AI Config Status', { 
-    projectId: PROJECT_ID, 
-    useMockEnv: process.env.USE_MOCK_AI, 
-    hasSdk: !!VertexAI,
-    isMocking: USE_MOCK 
-  });
+  logger.debug('Vertex AI request', { useMock, reason, language, model: MODEL });
 
-  if (USE_MOCK) {
-    logger.info('Using mock AI response', { 
-      reason: !PROJECT_ID ? 'No Project ID' : !VertexAI ? 'SDK Not Loaded' : 'Forced by config' 
-    });
-    // Simulate processing delay
-    await new Promise((r) => setTimeout(r, 800));
+  if (useMock) {
+    logger.info('Using mock AI response', { reason });
+    await new Promise((r) => setTimeout(r, 800)); // Simulate processing delay
     return getMockResponse(userMessage);
   }
 
+  // Check cache before hitting the API
+  const cacheKey = cache.makeKey('chat', userMessage, language);
+  const cached = cache.get(cacheKey);
+  if (cached) {
+    logger.info('Serving chat response from cache', { model: MODEL });
+    return cached;
+  }
+
   try {
-    const vertexAI = new VertexAI({ project: PROJECT_ID, location: LOCATION });
+    const vertexAI = getVertexClient();
     const generativeModel = vertexAI.getGenerativeModel({
       model: MODEL,
       systemInstruction: {
@@ -141,7 +205,7 @@ const chat = async (userMessage, history = [], language = 'en') => {
       },
     });
 
-    // Build conversation history for context
+    // Map conversation history to Vertex AI format
     const chatHistory = history.map((msg) => ({
       role: msg.role,
       parts: [{ text: msg.content }],
@@ -155,44 +219,61 @@ const chat = async (userMessage, history = [], language = 'en') => {
     const result = await chatSession.sendMessage(userMessage + languageInstruction);
     const responseText = result.response.candidates[0].content.parts[0].text;
 
-    // Parse JSON response
     const parsed = JSON.parse(responseText);
     logger.info('Vertex AI response received', { model: MODEL });
+
+    // Cache the successful response
+    cache.set(cacheKey, parsed);
+
     return parsed;
   } catch (error) {
-    logger.error('Vertex AI error, falling back to mock', { error: error.message });
+    logger.error('Vertex AI error – falling back to mock', { error: error.message });
     return getMockResponse(userMessage);
   }
 };
 
 /**
- * Generate an AI comparison summary for candidates
- * @param {Array} candidates - Array of candidate objects
- * @returns {string} Comparison summary text
+ * Generates a concise, non-partisan AI comparison summary for a set of candidates.
+ * Results are cached for 30 minutes since candidate data rarely changes.
+ *
+ * @param {Array<{name?: string, education?: string, assets?: string}>} candidates - Candidate objects
+ * @returns {Promise<string>} Plain-text comparison summary (max 3 sentences)
  */
 const compareCandidates = async (candidates) => {
-  const USE_MOCK = process.env.USE_MOCK_AI === 'true' || !process.env.GOOGLE_CLOUD_PROJECT || !VertexAI;
+  const { useMock } = getMockStatus();
 
-  if (USE_MOCK) {
+  if (useMock) {
     return `Based on the profiles, ${candidates[0]?.name || 'Candidate A'} has a background in ${candidates[0]?.education || 'public service'} with declared assets of ${candidates[0]?.assets || 'N/A'}. ${candidates[1]?.name || 'Candidate B'} brings experience in ${candidates[1]?.education || 'governance'}. Both candidates have filed their affidavits with the Election Commission. Voters are encouraged to review all credentials carefully before making their decision.`;
   }
 
+  // Check cache (30-minute TTL for candidate comparisons)
+  const cacheKey = cache.makeKey('compare', JSON.stringify(candidates.map((c) => c.name)));
+  const cached = cache.get(cacheKey);
+  if (cached) {
+    logger.info('Serving candidate comparison from cache');
+    return cached;
+  }
+
   try {
-    const PROJECT_ID = process.env.GOOGLE_CLOUD_PROJECT;
-    const LOCATION = process.env.VERTEX_AI_LOCATION || 'us-central1';
-    const vertexAI = new VertexAI({ project: PROJECT_ID, location: LOCATION });
+    const MODEL = process.env.VERTEX_AI_MODEL || 'gemini-2.5-flash';
+    const vertexAI = getVertexClient();
     const generativeModel = vertexAI.getGenerativeModel({
-      model: process.env.VERTEX_AI_MODEL || 'gemini-1.5-flash-001',
+      model: MODEL,
       generationConfig: { temperature: 0.4, maxOutputTokens: 512 },
     });
 
     const prompt = `Compare these election candidates objectively and briefly (max 3 sentences). Be factual, non-partisan, and focus on qualifications and declared information:\n\n${JSON.stringify(candidates, null, 2)}`;
     const result = await generativeModel.generateContent(prompt);
-    return result.response.candidates[0].content.parts[0].text;
+    const summary = result.response.candidates[0].content.parts[0].text;
+
+    // Cache with a 30-minute TTL
+    cache.set(cacheKey, summary, 30 * 60 * 1000);
+
+    return summary;
   } catch (error) {
     logger.error('Candidate comparison AI error', { error: error.message });
     return 'Unable to generate AI comparison at this time. Please review the candidate profiles directly.';
   }
 };
 
-module.exports = { chat, compareCandidates };
+module.exports = { chat, compareCandidates, getMockStatus };

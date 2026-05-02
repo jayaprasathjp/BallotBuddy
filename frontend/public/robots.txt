@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Disallow admin or sensitive paths if they exist
+Disallow: /api/
+
+Sitemap: https://ballotbuddy-442722843230.asia-south1.run.app/sitemap.xml

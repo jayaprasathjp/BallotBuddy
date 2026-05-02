@@ -47,6 +47,7 @@
     "@google-cloud/logging-winston": "^6.0.1",
     "@google-cloud/vertexai": "^1.1.0",
     "axios": "^1.16.0",
+    "compression": "^1.8.1",
     "cors": "^2.8.5",
     "dompurify": "^3.1.5",
     "dotenv": "^16.4.5",

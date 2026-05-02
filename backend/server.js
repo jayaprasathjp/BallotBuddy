@@ -1,10 +1,20 @@
 /**
  * BallotBuddy Backend – Express Server
  * Production-ready Node.js API with security, logging, and GCP integrations.
+ *
+ * Middleware stack (in order):
+ *  1. Compression  – gzip/deflate all text responses for performance
+ *  2. Helmet       – sets secure HTTP headers
+ *  3. CORS         – allows configured cross-origin requests
+ *  4. Body parsing – limits payload to 10 KB
+ *  5. Rate limiting – protects API from abuse
+ *  6. Routes       – domain-specific handlers
+ *  7. Static files – serves frontend SPA with long-lived cache headers
  */
 require('dotenv').config();
 
 const express = require('express');
+const compression = require('compression');
 const helmet = require('helmet');
 const cors = require('cors');
 const path = require('path');
@@ -20,6 +30,14 @@ const votingRoutes = require('./src/routes/voting');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+// ─────────────────────────────────────────
+// Compression (must be first for max effect)
+// ─────────────────────────────────────────
+app.use(compression({
+  level: 6,        // Balance between speed and compression ratio
+  threshold: 1024, // Only compress responses > 1 KB
+}));
 
 // ─────────────────────────────────────────
 // Security Middleware
@@ -95,12 +113,17 @@ app.use('/api/vote', votingRoutes);
 
 // Health check endpoint (required for Cloud Run)
 app.get('/health', (req, res) => {
+  const { stats } = require('./src/services/cache');
+  const { getMockStatus } = require('./src/services/vertexai');
+  const { useMock, reason } = getMockStatus();
+
   res.json({
     status: 'healthy',
     service: 'BallotBuddy API',
     version: process.env.npm_package_version || '1.0.0',
     timestamp: new Date().toISOString(),
-    mockMode: process.env.USE_MOCK_AI === 'true',
+    ai: { mockMode: useMock, reason },
+    cache: stats(),
   });
 });
 
@@ -109,8 +132,20 @@ app.get('/health', (req, res) => {
 // ─────────────────────────────────────────
 if (process.env.NODE_ENV === 'production') {
   const frontendBuild = path.join(__dirname, '..', 'frontend', 'dist');
-  app.use(express.static(frontendBuild));
+
+  // Serve hashed assets (JS/CSS) with a 1-year immutable cache
+  app.use('/assets', express.static(path.join(frontendBuild, 'assets'), {
+    maxAge: '1y',
+    immutable: true,
+  }));
+
+  // Serve remaining static files (fonts, icons) with 1-week cache
+  app.use(express.static(frontendBuild, { maxAge: '7d' }));
+
+  // SPA fallback – always return index.html with no-cache so the
+  // browser always gets the latest entry point
   app.get('*', (req, res) => {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.sendFile(path.join(frontendBuild, 'index.html'));
   });
 }
