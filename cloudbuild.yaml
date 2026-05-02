@@ -88,7 +88,7 @@ substitutions:
   _VERTEX_AI_LOCATION: us-central1
   _VERTEX_AI_MODEL: gemini-2.5-flash
   _USE_MOCK_AI: 'false'
-  _ALLOWED_ORIGINS: '*'
+  _ALLOWED_ORIGINS: 'https://ballotbuddy-442722843230.asia-south1.run.app,https://ballotbuddy-backend-442722843230.asia-south1.run.app'
   _BACKEND_URL: 'https://ballotbuddy-backend-442722843230.asia-south1.run.app'
   _VITE_GCP_PROJECT_ID: 'mineral-hangar-495105-r3'
   _VITE_GCP_API_KEY: 'AIzaSyBoGpn3lA0A5T2AU_nWSBqdKKFXQLs76J8'
