@@ -1,0 +1,68 @@
+{
+  "name": "ballotbuddy-backend",
+  "version": "1.0.0",
+  "description": "BallotBuddy AI – Election Process Assistant Backend API",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "jest --coverage --forceExit",
+    "test:watch": "jest --watch",
+    "lint": "eslint src/ server.js --ext .js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "setupFiles": [
+      "<rootDir>/jest.setup.js"
+    ],
+    "coverageDirectory": "coverage",
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "server.js",
+      "!src/**/__tests__/**"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 60,
+        "functions": 70,
+        "lines": 70,
+        "statements": 70
+      }
+    }
+  },
+  "keywords": [
+    "election",
+    "ai",
+    "ballot",
+    "india",
+    "democracy"
+  ],
+  "author": "BallotBuddy Team",
+  "license": "MIT",
+  "dependencies": {
+    "@google-cloud/firestore": "^8.5.0",
+    "@google-cloud/logging-winston": "^6.0.1",
+    "@google-cloud/vertexai": "^1.1.0",
+    "axios": "^1.16.0",
+    "cors": "^2.8.5",
+    "dompurify": "^3.1.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.3.1",
+    "google-auth-library": "^10.6.2",
+    "helmet": "^7.1.0",
+    "isomorphic-dompurify": "^2.12.0",
+    "joi": "^17.13.3",
+    "jsdom": "^24.1.0",
+    "morgan": "^1.10.0",
+    "uuid": "^10.0.0",
+    "winston": "^3.13.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
+  }
+}

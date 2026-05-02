@@ -1,0 +1,112 @@
+/* CandidatesPage.css */
+.candidates-page { min-height: calc(100vh - 64px); padding: var(--spacing-2xl) 0; }
+.candidates-header { text-align: center; margin-bottom: var(--spacing-2xl); }
+.candidates-title { font-size: var(--font-size-3xl); font-weight: 800; margin-bottom: var(--spacing-sm); }
+.candidates-subtitle { color: var(--text-secondary); font-size: var(--font-size-lg); }
+.select-hint { color: var(--text-muted); font-size: var(--font-size-sm); margin-top: var(--spacing-md); }
+
+.compare-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  background: var(--bg-elevated);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--border-radius-pill);
+  padding: var(--spacing-sm) var(--spacing-md);
+  margin-top: var(--spacing-lg);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.candidates-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.candidate-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  cursor: default;
+  position: relative;
+  transition: all var(--transition-normal);
+}
+
+.candidate-card.selected {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-glow);
+}
+
+.candidate-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-2xl);
+  font-weight: 800;
+  align-self: center;
+}
+
+.candidate-info { flex: 1; }
+.candidate-name { font-size: var(--font-size-xl); font-weight: 700; margin-bottom: var(--spacing-sm); text-align: center; }
+
+.party-chip {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: var(--border-radius-pill);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  text-align: center;
+  width: 100%;
+  margin-bottom: var(--spacing-md);
+}
+
+.candidate-meta { display: flex; flex-direction: column; gap: var(--spacing-xs); }
+.candidate-meta > div { font-size: var(--font-size-sm); color: var(--text-secondary); line-height: 1.4; }
+.meta-label { font-weight: 600; color: var(--text-muted); }
+
+.text-success { color: var(--color-success); }
+.text-danger { color: var(--color-danger); font-weight: 600; }
+
+.manifesto-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: var(--spacing-sm); }
+.manifesto-chip { background: var(--bg-elevated); border: 1px solid var(--border-color); border-radius: var(--border-radius-pill); padding: 2px 8px; font-size: var(--font-size-xs); color: var(--text-muted); }
+
+.compare-toggle { align-self: center; }
+
+/* Comparison Panel */
+.comparison-panel {
+  background: var(--bg-card);
+  border: 1px solid rgba(26, 115, 232, 0.3);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-2xl);
+  margin-bottom: var(--spacing-2xl);
+  backdrop-filter: blur(20px);
+  animation: fadeInUp 0.4s ease;
+}
+
+.comparison-title { font-size: var(--font-size-xl); font-weight: 700; margin-bottom: var(--spacing-md); }
+.comparison-summary { color: var(--text-secondary); line-height: 1.7; margin-bottom: var(--spacing-xl); font-size: var(--font-size-base); background: var(--bg-elevated); border-radius: var(--border-radius-sm); padding: var(--spacing-md); border-left: 3px solid var(--color-primary); }
+
+.comparison-cards { display: flex; gap: var(--spacing-lg); flex-wrap: wrap; }
+
+.compare-mini-card {
+  flex: 1;
+  min-width: 160px;
+  background: var(--bg-elevated);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-md);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  align-items: center;
+}
+
+.compare-avatar { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: var(--font-size-xl); font-weight: 800; }
+.compare-name { font-weight: 700; font-size: var(--font-size-sm); }
+.compare-party { font-size: var(--font-size-xs); font-weight: 600; }
+.compare-detail { font-size: var(--font-size-xs); color: var(--text-muted); }

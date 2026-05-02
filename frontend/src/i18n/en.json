@@ -1,0 +1,122 @@
+{
+  "nav": {
+    "home": "Home",
+    "chat": "AI Assistant",
+    "journey": "Election Journey",
+    "timeline": "Timeline",
+    "candidates": "Candidates",
+    "vote": "Vote Now",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "accessibility": "Accessibility"
+  },
+  "home": {
+    "hero_title": "Your AI-Powered Election Guide for a Stronger Democracy",
+    "hero_subtitle": "Understand the complete Indian election process, register to vote, compare candidates, and practice voting — all with AI assistance in your language.",
+    "cta_chat": "Ask AI Assistant",
+    "cta_journey": "Explore Journey",
+    "feature_ai_title": "AI Election Assistant",
+    "feature_ai_desc": "Ask any question about elections, voter registration, and electoral process in simple language.",
+    "feature_journey_title": "Election Journey",
+    "feature_journey_desc": "Interactive step-by-step guide through all 7 stages of the Indian election process.",
+    "feature_timeline_title": "Election Timeline",
+    "feature_timeline_desc": "Track important election dates and set reminders for key deadlines.",
+    "feature_candidates_title": "Candidate Comparison",
+    "feature_candidates_desc": "Compare candidates using AI analysis of their background, assets, and manifestos.",
+    "feature_vote_title": "Vote Simulator",
+    "feature_vote_desc": "Practice the voting process with our realistic EVM and VVPAT simulation.",
+    "feature_multilingual_title": "Multilingual Support",
+    "feature_multilingual_desc": "Get election guidance in English, Hindi, and Tamil — your language, your choice.",
+    "progress": "Your progress"
+  },
+  "chat": {
+    "title": "AI Election Assistant",
+    "subtitle": "Ask any question about Indian elections, voter registration, or the electoral process",
+    "placeholder": "Ask about elections... (Enter to send)",
+    "send": "Send",
+    "thinking": "BallotBuddy is thinking...",
+    "speak": "Read aloud",
+    "voice_start": "Start voice input",
+    "voice_stop": "Stop voice input",
+    "explanation": "Explanation",
+    "steps": "Step-by-Step Guide",
+    "timeline": "Timeline",
+    "checklist": "Checklist",
+    "tips": "Tips",
+    "related": "Related topics",
+    "suggested_q1": "How do I register to vote?",
+    "suggested_q2": "What is the election process in India?",
+    "suggested_q3": "What documents do I need for voter ID?",
+    "suggested_q4": "How does EVM and VVPAT work?"
+  },
+  "journey": {
+    "title": "Election Journey",
+    "subtitle": "Your complete guide through the Indian election process — from eligibility to result declaration",
+    "progress": "Journey Progress",
+    "step_complete": "Mark as Complete",
+    "step_completed": "Completed!"
+  },
+  "timeline": {
+    "title": "Election Timeline",
+    "subtitle": "Key dates, deadlines, and milestones in the election calendar",
+    "completed": "Completed",
+    "current": "Current",
+    "upcoming": "Upcoming",
+    "set_reminder": "Set Reminder",
+    "reminder_set": "Reminder Set!"
+  },
+  "candidates": {
+    "title": "Candidate Information",
+    "subtitle": "Know your candidates — compare backgrounds, manifestos, and track records",
+    "education": "Education",
+    "experience": "Experience",
+    "assets": "Assets",
+    "criminal_cases": "Criminal Cases",
+    "compare": "AI Compare",
+    "ai_comparison": "AI Comparison Analysis",
+    "select_to_compare": "Select 2–4 candidates to compare them using AI"
+  },
+  "vote": {
+    "title": "Mock Voting Simulator",
+    "subtitle": "Practice the complete voting process — from ballot to VVPAT receipt",
+    "disclaimer": "This is a simulation for educational purposes only. No real votes are cast.",
+    "cast_vote": "Proceed to Vote",
+    "confirm_vote": "Confirm Your Vote",
+    "vote_cast": "Vote Successfully Cast!",
+    "vvpat_preview": "VVPAT Receipt Preview",
+    "vote_id": "Vote ID",
+    "serial": "Serial Number",
+    "timestamp": "Timestamp",
+    "back": "Start Over"
+  },
+  "auth": {
+    "login_title": "Welcome Back",
+    "register_title": "Create Account",
+    "email": "Email Address",
+    "password": "Password",
+    "name": "Full Name",
+    "login_btn": "Login",
+    "register_btn": "Create Account",
+    "no_account": "Don't have an account?",
+    "have_account": "Already have an account?",
+    "register_link": "Register",
+    "login_link": "Login"
+  },
+  "common": {
+    "error": "Something went wrong. Please try again.",
+    "loading": "Loading...",
+    "back": "Back",
+    "next": "Next",
+    "close": "Close"
+  },
+  "accessibility": {
+    "toggle": "Accessibility Settings",
+    "high_contrast": "High Contrast Mode",
+    "font_size": "Font Size",
+    "screen_reader": "Enhanced Screen Reader",
+    "increase_font": "Increase font size",
+    "decrease_font": "Decrease font size",
+    "reset_font": "Reset font size"
+  }
+}
