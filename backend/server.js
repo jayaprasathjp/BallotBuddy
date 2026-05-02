@@ -32,6 +32,12 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // ─────────────────────────────────────────
+// Startup Environment Validation
+// ─────────────────────────────────────────
+const { validateEnv } = require('./src/services/envValidator');
+validateEnv(); // Logs warnings/errors; non-blocking in dev, strict in prod
+
+// ─────────────────────────────────────────
 // Compression (must be first for max effect)
 // ─────────────────────────────────────────
 app.use(compression({
