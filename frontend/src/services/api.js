@@ -54,7 +54,7 @@ export const timelineApi = {
 // ── Voting Simulation ────────────────────────────────────────────
 export const votingApi = {
   simulate: (candidateId, sessionId) =>
-    api.post('/voting/simulate', { candidateId, sessionId }),
+    api.post('/vote/simulate', { candidateId, sessionId }),
 };
 
 export default api;
