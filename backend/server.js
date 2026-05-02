@@ -110,12 +110,18 @@ app.use((req, res, next) => {
 });
 
 // ─────────────────────────────────────────
-// API Routes
+// API Routes  (/api/* canonical + /* aliases for backwards compat)
 // ─────────────────────────────────────────
 app.use('/api/chat', chatRoutes);
 app.use('/api/candidates', candidatesRoutes);
 app.use('/api/timeline', timelineRoutes);
 app.use('/api/vote', votingRoutes);
+
+// Backward-compat aliases – handles frontend built without /api prefix
+app.use('/chat', chatRoutes);
+app.use('/candidates', candidatesRoutes);
+app.use('/timeline', timelineRoutes);
+app.use('/vote', votingRoutes);
 
 // Health check endpoint (required for Cloud Run)
 app.get('/health', (req, res) => {
