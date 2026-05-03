@@ -28,9 +28,6 @@ const TestComponent = () => {
     </div>
   );
 };
-    </div>
-  );
-};
 
 describe("AuthContext", () => {
   beforeEach(() => {

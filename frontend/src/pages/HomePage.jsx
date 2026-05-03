@@ -25,30 +25,6 @@ const FEATURES = [
     path: "/timeline",
     color: "#0891b2",
   },
-];
-
-const HomePage = () => {
-  const { t } = useTranslation();
-  return (
-    <div className="homepage">
-      {FEATURES.map(feature => (
-        <Link
-          to={feature.path}
-          key={feature.titleKey}
-          style={{ color: feature.color }}
-        >
-          <div className="feature">
-            <span className="icon">{feature.icon}</span>
-            <h3>{t(feature.titleKey)}</h3>
-            <p>{t(feature.descKey)}</p>
-          </div>
-        </Link>
-      ))}
-    </div>
-  );
-};
-
-export default HomePage;
   {
     icon: "👥",
     titleKey: "home.feature_candidates_title",

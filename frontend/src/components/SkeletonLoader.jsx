@@ -1,7 +1,7 @@
 // src/components/SkeletonLoader.jsx
 import "./SkeletonLoader.css";
 
-const SkeletonLoader = ({ type = "card", count = 1 }) => {
+export default function SkeletonLoader({ type = "card", count = 1 }) {
   const renderSkeleton = () => {
     switch (type) {
       case "page":
@@ -25,7 +25,6 @@ const SkeletonLoader = ({ type = "card", count = 1 }) => {
             className="skeleton-chat"
             role="status"
             aria-label="Loading response"
-          >
           >
             <div
               className="skeleton skeleton-bubble"

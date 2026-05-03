@@ -25,9 +25,6 @@ export default defineConfig({
         // manualChunks removed for Rolldown compatibility
       },
     },
-  },
-});
-    },
     sourcemap: false,
     chunkSizeWarningLimit: 800,
   },
