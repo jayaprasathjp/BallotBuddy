@@ -5,7 +5,7 @@ import { candidatesApi } from "../services/api";
 import SkeletonLoader from "../components/SkeletonLoader";
 import "./CandidatesPage.css";
 
-function CandidateCard({ candidate, selected, onSelect, t }) {
+const CandidateCard = ({ candidate, selected, onSelect, t }) => {
   return (
     <article
       className={`candidate-card card ${selected ? "selected" : ""}`}

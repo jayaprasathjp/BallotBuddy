@@ -13,7 +13,7 @@ const SUGGESTED_QUESTIONS = [
 ];
 
 // Individual AI response component
-function AIResponseCard({ response, t }) {
+const AIResponseCard = ({ response, t }) => {
   const speak = (text) => {
     if ("speechSynthesis" in window) {
       window.speechSynthesis.cancel();
