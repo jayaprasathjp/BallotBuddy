@@ -1,0 +1,21 @@
+# Secrets – never copy into the image
+.env
+*.env
+
+# Build output (nginx stage copies /app/dist directly)
+dist
+
+# Dev tooling
+node_modules
+npm-debug.log*
+*.log
+
+# Tests
+src/__tests__
+coverage
+
+# Editor artifacts
+.vscode
+.idea
+*.suo
+*.sln

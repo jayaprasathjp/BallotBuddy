@@ -1,0 +1,21 @@
+# Secrets – never copy into the image
+.env
+*.env
+service-account.json
+*.json.key
+
+# Dev tooling
+node_modules
+npm-debug.log*
+*.log
+
+# Tests and CI
+src/__tests__
+coverage
+.nyc_output
+
+# Editor artifacts
+.vscode
+.idea
+*.suo
+*.sln

@@ -41,13 +41,13 @@ describe('AccessibilityContext', () => {
   it('increases font size up to 150%', async () => {
     render(<AccessibilityProvider><TestComponent /></AccessibilityProvider>);
     await userEvent.click(screen.getByText('Increase'));
-    expect(parseInt(screen.getByTestId('scale').textContent)).toBeGreaterThan(100);
+    expect(Number.parseInt(screen.getByTestId('scale').textContent)).toBeGreaterThan(100);
   });
 
   it('decreases font size', async () => {
     render(<AccessibilityProvider><TestComponent /></AccessibilityProvider>);
     await userEvent.click(screen.getByText('Decrease'));
-    expect(parseInt(screen.getByTestId('scale').textContent)).toBeLessThan(100);
+    expect(Number.parseInt(screen.getByTestId('scale').textContent)).toBeLessThan(100);
   });
 
   it('resets font size to 100%', async () => {

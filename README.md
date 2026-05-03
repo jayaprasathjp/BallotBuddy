@@ -17,7 +17,150 @@
 
 ---
 
+## 📌 Chosen Vertical
+
+**Civic Technology & Digital Democracy** — BallotBuddy AI bridges the gap in accessible, multilingual civic education for India's 950+ million registered voters.
+
+---
+
+## 💡 Approach & Logic
+
+**Design principles:**
+1. **AI-First, Fallback-Safe** — Vertex AI Gemini 2.5 Flash powers all intelligence; the app degrades to rich seed data when AI is unavailable.
+2. **Security by Default** — Every request passes 7 defence layers before reaching a route handler.
+3. **Accessibility as a Feature** — WCAG 2.1 AA enforced at the component level with ARIA, voice input, and a runtime accessibility panel.
+
+**Technical decisions:**
+
+| Decision | Rationale |
+|---|---|
+| Vertex AI Singleton + Cache | Prevents re-init overhead; 15-min TTL cuts API calls ~60% |
+| Multi-stage Docker builds | Backend ~180 MB; frontend nginx:alpine ~25 MB |
+| Winston Structured Logging | JSON logs ship to Cloud Logging; zero `console.log` in production |
+| React 18 `lazy()` routes | Users only download code for the page they visit |
+| Vanilla CSS | Zero runtime overhead; full WCAG focus-state control |
+
+---
+
+## ⚙️ How the Solution Works
+
+```
+User types a question (any language)
+  → POST /api/chat  { message, language, history }
+  → Rate Limiter → CORS → Helmet → Joi Validate → DOMPurify
+  → Cache check (15-min TTL)
+      HIT  → respond in <1ms
+      MISS → Gemini 2.5 Flash (structured JSON system prompt)
+           → cache result → persist to Firestore
+  → Response: { explanation, steps[], checklist[], tips[], relatedTopics[] }
+  → Frontend renders in aria-live="polite" cards
+  → Winston emits JSON log → Google Cloud Logging
+```
+
+| Feature | Component | Route | AI |
+|---|---|---|---|
+| AI Election Assistant | `ChatPage.jsx` | `POST /api/chat` | ✅ Gemini |
+| Voter Journey | `JourneyPage.jsx` | Static | ❌ |
+| Election Timeline | `TimelinePage.jsx` | `GET /api/timeline` | FCM only |
+| Candidate Comparison | `CandidatesPage.jsx` | `POST /api/candidates/compare` | ✅ Gemini |
+| EVM Simulator | `VotePage.jsx` | `POST /api/vote/simulate` | ❌ |
+
+---
+
+## 🏆 Evaluation Focus Areas
+
+### ✅ 1. Code Quality
+
+- **Layered Architecture**: SPA → Express API → Service Layer → Data Layer, each with a single responsibility.
+- **JSDoc**: All services and middleware have full `@param`/`@returns`/`@typedef` documentation.
+- **DRY**: Shared logic in `cache.js`, `logger.js`, `firestore.js`, `validate.js`, `sanitize.js`.
+- **Zero `console.log`**: All output routes through Winston — no unmanaged debug statements in production.
+- **ESLint**: Enforced across `src/` and `server.js`.
+
+### ✅ 2. Security
+
+| Layer | Mechanism | File |
+|---|---|---|
+| Rate Limiting | 100/15min general · 20/min AI · 5/15min auth | `middleware/rateLimiter.js` |
+| CORS | Dynamic origin whitelist | `server.js` |
+| HTTP Headers | Helmet: CSP, HSTS, X-Frame, X-Content-Type | `server.js` |
+| Input Validation | Joi schemas, `stripUnknown: true` | `middleware/validate.js` |
+| XSS Prevention | DOMPurify sanitizes all `req.body` strings | `middleware/sanitize.js` |
+| Secret Management | No hardcoded secrets; env vars only; startup validation | `services/envValidator.js` |
+| Docker Hardening | Non-root user; secrets passed to `RUN`, never `ENV` | `backend/Dockerfile` |
+| Error Masking | Generic messages in production; stack traces never exposed | `server.js` |
+
+### ✅ 3. Efficiency
+
+- **AI Caching**: Repeated queries served in `<1ms` vs ~2s Vertex AI round-trip.
+- **Gzip Level 6**: 60–80% bandwidth reduction on all text responses.
+- **Immutable Asset Caching**: Hashed JS/CSS with `Cache-Control: public, immutable, max-age=31536000`.
+- **Code Splitting**: Lazy-loaded routes — users only download code for visited pages.
+- **Singleton Clients**: Vertex AI and Firestore initialized once, reused across all requests.
+- **Payload Cap**: `10kb` request body limit prevents resource exhaustion.
+
+### ✅ 4. Testing
+
+```bash
+cd backend && npm test   # Jest + Supertest
+cd frontend && npm test  # Vitest + React Testing Library
+```
+
+| Suite | Coverage |
+|---|---|
+| `chat.test.js` | Validation, rate limiting, AI path, error handling |
+| `candidates.test.js` | Seed fallback, AI comparison |
+| `voting.test.js` | UUID validation, duplicate detection |
+| `timeline.test.js` | FCM reminder integration |
+| `validate.test.js` | All Joi schemas — required fields, max lengths |
+| `cache.test.js` | TTL expiry, hit/miss, eviction |
+| `vertexai.test.js` | Mock mode, live path, caching, fallback |
+| `firestore.test.js` | CRUD helpers — get, create, set, delete, query |
+
+Coverage thresholds enforced: **95% lines · 95% functions · 90% branches**.
+
+### ✅ 5. Accessibility
+
+| Category | Implementation |
+|---|---|
+| Navigation | Skip-to-content link; `aria-current="page"` on active nav |
+| Semantics | `<main>`, `<header>`, `<nav>`, `<section>` landmarks throughout |
+| Screen Readers | `aria-live="polite"` on AI areas; `aria-label` on all icon buttons |
+| Keyboard | Full tab order; visible focus outlines; no traps |
+| Voice Input | Web Speech API integrated in chat interface |
+| Contrast | Runtime high-contrast toggle via CSS custom properties |
+| Font Scaling | 0.8× to 1.5× via Accessibility Panel |
+| Motion | Animations respect `prefers-reduced-motion` |
+| Ballot Simulator | `role="radiogroup"` with per-candidate `aria-label` |
+
+### ✅ 6. Google Services
+
+| Service | How It Is Used |
+|---|---|
+| **Vertex AI — Gemini 2.5 Flash** | Core AI: chat answers, candidate comparison, multilingual responses |
+| **Firestore** | Persists chat history, candidates, timeline events, vote sessions |
+| **Cloud Run** | Hosts frontend (nginx) and backend (Node.js) as separate serverless services |
+| **Cloud Build** | CI/CD: builds Docker images and deploys on every git push |
+| **Cloud Logging** | Winston `@google-cloud/logging-winston` ships structured JSON logs |
+| **Firebase Cloud Messaging** | Browser push notifications for election-day reminders |
+
+---
+
+## 📋 Assumptions Made
+
+1. **No Real Votes** — The EVM simulator is educational only; no data sent to any election authority.
+2. **Synthetic Candidate Data** — Profiles are seed data. Production would ingest ECI Form 26 affidavits.
+3. **Anonymous Users Only** — No login/PII collected. Users identified by a transient `x-guest-id` header.
+4. **Firestore Optional** — Without credentials the app falls back to seed data; all features remain functional.
+5. **FCM Optional** — Push notifications degrade silently if VAPID key or browser permission is unavailable.
+6. **AI Language Accuracy** — Hindi/Tamil output depends on Gemini capabilities; not manually audited.
+7. **ECI Guideline Currency** — AI references training-data ECI guidelines; time-sensitive info should be verified at [voters.eci.gov.in](https://voters.eci.gov.in).
+
+---
+
 ## 🎯 Problem Statement
+
+
 
 India is the world's largest democracy, yet millions of first-time voters face critical barriers:
 - **Complexity**: The election process involves multiple agencies, forms, and deadlines

@@ -12,7 +12,8 @@ export const AuthProvider = ({ children }) => {
     let guestId = localStorage.getItem('ballotbuddy_guest_id');
 
     if (!guestId) {
-      guestId = `guest_${Math.random().toString(36).substring(2, 11)}_${Date.now()}`;
+      // crypto.randomUUID() uses the browser's CSPRNG (SubtleCrypto)
+      guestId = `guest_${crypto.randomUUID()}`;
       localStorage.setItem('ballotbuddy_guest_id', guestId);
     }
 

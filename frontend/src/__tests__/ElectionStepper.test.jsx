@@ -52,7 +52,7 @@ describe('JourneyPage (Election Stepper)', () => {
 
     // Progress should update
     const progressBar = screen.getByRole('progressbar');
-    expect(parseInt(progressBar.getAttribute('aria-valuenow'))).toBeGreaterThan(0);
+    expect(Number.parseInt(progressBar.getAttribute('aria-valuenow'))).toBeGreaterThan(0);
   });
 
   it('shows progress percentage correctly', async () => {
