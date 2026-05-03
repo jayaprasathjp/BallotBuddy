@@ -35,6 +35,9 @@ const PORT = process.env.PORT || 3001;
 // Startup Environment Validation
 // ─────────────────────────────────────────
 const { validateEnv } = require('./src/services/envValidator');
+const { stats } = require('./src/services/cache');
+const { getMockStatus } = require('./src/services/vertexai');
+
 validateEnv(); // Logs warnings/errors; non-blocking in dev, strict in prod
 
 // ─────────────────────────────────────────
@@ -81,11 +84,13 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'x-guest-id'],
 }));
 
+const PAYLOAD_LIMIT = '10kb';
+
 // ─────────────────────────────────────────
 // Body Parsing
 // ─────────────────────────────────────────
-app.use(express.json({ limit: '10kb' })); // Limit payload size
-app.use(express.urlencoded({ extended: false, limit: '10kb' }));
+app.use(express.json({ limit: PAYLOAD_LIMIT })); // Limit payload size
+app.use(express.urlencoded({ extended: false, limit: PAYLOAD_LIMIT }));
 
 // ─────────────────────────────────────────
 // Rate Limiting (global)
@@ -125,8 +130,6 @@ app.use('/vote', votingRoutes);
 
 // Health check endpoint (required for Cloud Run)
 app.get('/health', (req, res) => {
-  const { stats } = require('./src/services/cache');
-  const { getMockStatus } = require('./src/services/vertexai');
   const { useMock, reason } = getMockStatus();
 
   res.json({

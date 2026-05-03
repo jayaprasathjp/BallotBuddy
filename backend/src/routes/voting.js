@@ -13,6 +13,10 @@ const { sanitizeBody } = require('../middleware/sanitize');
 const { optionalGuest } = require('../middleware/auth');
 const logger = require('../services/logger');
 
+const VOTE_SESSION_TTL_MS = 30 * 60 * 1000;
+const SERIAL_MIN = 100000;
+const SERIAL_MAX = 1000000;
+
 // In-memory store for mock votes (session-scoped, not persisted)
 const simulatedVotes = new Map();
 
@@ -36,14 +40,14 @@ router.post('/simulate', optionalGuest, sanitizeBody, validators.voteSimulate, (
     candidateId,
     sessionId,
     timestamp,
-    serialNumber: randomInt(100000, 1000000),
+    serialNumber: randomInt(SERIAL_MIN, SERIAL_MAX),
     message: 'Your vote has been recorded in the EVM. A VVPAT slip has been generated for your verification.',
     disclaimer: 'THIS IS A SIMULATION ONLY. No real votes are being recorded.',
   };
 
-  // Store session vote (cleared after 30 minutes)
+  // Store session vote (cleared after VOTE_SESSION_TTL_MS)
   simulatedVotes.set(sessionId, receipt);
-  setTimeout(() => simulatedVotes.delete(sessionId), 30 * 60 * 1000);
+  setTimeout(() => simulatedVotes.delete(sessionId), VOTE_SESSION_TTL_MS);
 
   logger.info('Mock vote simulated', { voteId, candidateId });
 

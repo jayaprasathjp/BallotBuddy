@@ -6,11 +6,10 @@
 const express = require('express');
 const router = express.Router();
 
-const { getDocs } = require('../services/firestore');
+const { getDocs, getDoc } = require('../services/firestore');
 const { sendElectionReminder } = require('../services/fcm');
 const { validators } = require('../middleware/validate');
 const { guestMiddleware } = require('../middleware/auth');
-const { getDoc } = require('../services/firestore');
 const logger = require('../services/logger');
 
 // Seed timeline data
@@ -130,8 +129,11 @@ router.post('/reminder', guestMiddleware, validators.reminder, async (req, res) 
   const { eventId, fcmToken } = req.body;
 
   try {
-    const events = SEED_TIMELINE;
-    const event = events.find((e) => e.id === eventId);
+    let event = await getDoc('timeline', eventId);
+    if (!event) {
+      const events = SEED_TIMELINE;
+      event = events.find((e) => e.id === eventId);
+    }
 
     if (!event) {
       return res.status(404).json({ success: false, error: 'Event not found.' });

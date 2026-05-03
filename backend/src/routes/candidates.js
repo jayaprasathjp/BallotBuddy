@@ -106,6 +106,7 @@ router.get('/:id', async (req, res) => {
     }
     res.json({ success: true, candidate });
   } catch (error) {
+    logger.error('Failed to retrieve candidate', { error: error.message, id: req.params.id });
     res.status(500).json({ success: false, error: 'Failed to retrieve candidate.' });
   }
 });

@@ -8,7 +8,7 @@
     "dev": "node --watch server.js",
     "test": "jest --coverage --forceExit",
     "test:watch": "jest --watch",
-    "lint": "eslint src/ server.js --ext .js"
+    "lint": "eslint src/ server.js"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -63,6 +63,8 @@
     "winston": "^3.13.0"
   },
   "devDependencies": {
+    "eslint": "^10.3.0",
+    "globals": "^17.6.0",
     "jest": "^29.7.0",
     "supertest": "^7.0.0"
   }

@@ -46,7 +46,7 @@ const get = (key) => {
   const entry = store.get(key);
   if (!entry) return undefined;
 
-  if (Date.now() > entry.expiresAt) {
+  if (Date.now() >= entry.expiresAt) {
     store.delete(key);
     logger.debug('Cache expired', { key });
     return undefined;

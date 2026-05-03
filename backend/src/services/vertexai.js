@@ -14,6 +14,10 @@
 const logger = require('./logger');
 const cache = require('./cache');
 
+const MOCK_DELAY_MS = 800;
+const MAX_OUTPUT_TOKENS = 1024;
+const COMPARE_CACHE_TTL_MS = 30 * 60 * 1000;
+
 // ─── Lazy-load Vertex AI SDK ─────────────────────────────────────────────────
 /** @type {typeof import('@google-cloud/vertexai').VertexAI | undefined} */
 let VertexAI;
@@ -178,7 +182,7 @@ const chat = async (userMessage, history = [], language = 'en') => {
 
   if (useMock) {
     logger.info('Using mock AI response', { reason });
-    await new Promise((r) => setTimeout(r, 800)); // Simulate processing delay
+    await new Promise((r) => setTimeout(r, MOCK_DELAY_MS)); // Simulate processing delay
     return getMockResponse(userMessage);
   }
 
@@ -201,7 +205,7 @@ const chat = async (userMessage, history = [], language = 'en') => {
       generationConfig: {
         responseMimeType: 'application/json',
         temperature: 0.3,
-        maxOutputTokens: 1024,
+        maxOutputTokens: MAX_OUTPUT_TOKENS,
       },
     });
 
@@ -266,8 +270,8 @@ const compareCandidates = async (candidates) => {
     const result = await generativeModel.generateContent(prompt);
     const summary = result.response.candidates[0].content.parts[0].text;
 
-    // Cache with a 30-minute TTL
-    cache.set(cacheKey, summary, 30 * 60 * 1000);
+    // Cache with TTL
+    cache.set(cacheKey, summary, COMPARE_CACHE_TTL_MS);
 
     return summary;
   } catch (error) {

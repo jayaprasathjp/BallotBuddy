@@ -6,12 +6,14 @@ const express = require('express');
 const router = express.Router();
 
 const { chat } = require('../services/vertexai');
-const { createDoc } = require('../services/firestore');
+const { createDoc, queryDocs } = require('../services/firestore');
 const { validators } = require('../middleware/validate');
 const { chatLimiter } = require('../middleware/rateLimiter');
 const { sanitizeBody } = require('../middleware/sanitize');
 const { optionalGuest } = require('../middleware/auth');
 const logger = require('../services/logger');
+
+const MAX_HISTORY_ITEMS = 50;
 
 // POST /api/chat
 router.post('/', chatLimiter, optionalGuest, sanitizeBody, validators.chatMessage, async (req, res) => {
@@ -55,9 +57,8 @@ router.get('/history', optionalGuest, async (req, res) => {
     return res.status(401).json({ success: false, error: 'Guest identifier required.' });
   }
   try {
-    const { queryDocs } = require('../services/firestore');
     const history = await queryDocs('chatHistory', 'userId', '==', req.guestId);
-    res.json({ success: true, history: history.slice(-50) }); // Last 50 messages
+    res.json({ success: true, history: history.slice(-MAX_HISTORY_ITEMS) }); // Last MAX_HISTORY_ITEMS messages
   } catch (error) {
     res.status(500).json({ success: false, error: 'Failed to retrieve history.' });
   }
