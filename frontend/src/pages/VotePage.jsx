@@ -309,9 +309,8 @@ export default function VotePage() {
               <p>Thank you for participating in Indian Democracy!</p>
             </div>
 
-            <div
+            <article
               className="receipt-card"
-              role="article"
               aria-label="VVPAT receipt details"
             >
               <div className="receipt-header">
@@ -335,7 +334,7 @@ export default function VotePage() {
               <div className="receipt-disclaimer" role="note">
                 {receipt.disclaimer}
               </div>
-            </div>
+            </article>
 
             <button
               className="btn btn-secondary"

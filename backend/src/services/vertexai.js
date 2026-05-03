@@ -18,11 +18,17 @@ const MOCK_DELAY_MS = 800;
 const MAX_OUTPUT_TOKENS = 1024;
 const COMPARE_CACHE_TTL_MS = 30 * 60 * 1000;
 
+const LANG_INSTRUCTIONS = {
+  hi: "\n\nIMPORTANT: Respond in Hindi language.",
+  ta: "\n\nIMPORTANT: Respond in Tamil language."
+};
+
 // ─── Lazy-load Vertex AI SDK ─────────────────────────────────────────────────
 /** @type {typeof import('@google-cloud/vertexai').VertexAI | undefined} */
-let VertexAI;
+let VertexAI = undefined;
 try {
-  ({ VertexAI } = require("@google-cloud/vertexai"));
+  const vertexModule = require("@google-cloud/vertexai");
+  VertexAI = vertexModule.VertexAI;
 } catch {
   logger.warn("Vertex AI SDK not available – falling back to mock mode");
 }
@@ -168,14 +174,15 @@ const getMockResponse = (userMessage) => {
  * @returns {{ useMock: boolean, reason: string }}
  */
 const getMockStatus = () => {
-  if (process.env.GOOGLE_CLOUD_PROJECT === undefined || process.env.GOOGLE_CLOUD_PROJECT === null || process.env.GOOGLE_CLOUD_PROJECT === "") {
+  if (!process.env.GOOGLE_CLOUD_PROJECT) {
     return { useMock: true, reason: "No Project ID configured" };
   }
-  if (VertexAI === undefined || VertexAI === null) {
+  if (!VertexAI) {
     return { useMock: true, reason: "Vertex AI SDK not loaded" };
   }
-  if (process.env.USE_MOCK_AI === "true")
+  if (process.env.USE_MOCK_AI === "true") {
     return { useMock: true, reason: "Forced by USE_MOCK_AI env var" };
+  }
   return { useMock: false, reason: "Live AI enabled" };
 };
 
@@ -237,12 +244,7 @@ const chat = async (userMessage, history = [], language = "en") => {
       parts: [{ text: msg.content }],
     }));
 
-    let languageInstruction = "";
-    if (language === "hi") {
-      languageInstruction = "\n\nIMPORTANT: Respond in Hindi language.";
-    } else if (language !== "en") {
-      languageInstruction = "\n\nIMPORTANT: Respond in Tamil language.";
-    }
+    const languageInstruction = LANG_INSTRUCTIONS[language] || "";
 
     const chatSession = generativeModel.startChat({ history: chatHistory });
     const result = await chatSession.sendMessage(
@@ -265,6 +267,13 @@ const chat = async (userMessage, history = [], language = "en") => {
   }
 };
 
+const generateMockComparison = (candidates) => {
+  const { name: n1 = "Candidate A", education: e1 = "public service", assets: a1 = "N/A" } = candidates[0] || {};
+  const { name: n2 = "Candidate B", education: e2 = "governance" } = candidates[1] || {};
+  
+  return `Based on the profiles, ${n1} has a background in ${e1} with declared assets of ${a1}. ${n2} brings experience in ${e2}. Both candidates have filed their affidavits with the Election Commission. Voters are encouraged to review all credentials carefully before making their decision.`;
+};
+
 /**
  * Generates a concise, non-partisan AI comparison summary for a set of candidates.
  * Results are cached for 30 minutes since candidate data rarely changes.
@@ -276,7 +285,7 @@ const compareCandidates = async (candidates) => {
   const { useMock } = getMockStatus();
 
   if (useMock) {
-    return `Based on the profiles, ${candidates[0]?.name || "Candidate A"} has a background in ${candidates[0]?.education || "public service"} with declared assets of ${candidates[0]?.assets || "N/A"}. ${candidates[1]?.name || "Candidate B"} brings experience in ${candidates[1]?.education || "governance"}. Both candidates have filed their affidavits with the Election Commission. Voters are encouraged to review all credentials carefully before making their decision.`;
+    return generateMockComparison(candidates);
   }
 
   // Check cache (30-minute TTL for candidate comparisons)
