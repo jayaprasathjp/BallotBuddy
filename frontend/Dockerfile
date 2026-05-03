@@ -21,33 +21,28 @@ COPY index.html vite.config.js ./
 COPY *.config.js *.config.ts tsconfig*.json ./
 
 # ---------------------------------------------------------------------------
-# Build-time ARGs for Vite public env vars
+# Build-time env vars injected via BuildKit secret mount
 #
-# SAFETY NOTE – ARG vs RUN --mount=type=secret:
-#   All VITE_* variables carry the "VITE_" prefix, which means Vite
-#   intentionally embeds them in the compiled JS bundle (index.html).
-#   They are PUBLIC client-side values (Firebase config, GA ID, etc.)
-#   and must be known at build time. Using ARG here is the correct
-#   and safe pattern; it is NOT equivalent to leaking a server secret.
+# COMPLIANCE NOTE – SonarCloud RSPEC-7466 / S6427:
+#   ARG is NOT used for any VITE_* variable. Instead, we use
+#   RUN --mount=type=secret which:
+#     1. Injects values from a file at build time only
+#     2. Does NOT create a new image layer containing the values
+#     3. Does NOT appear in `docker history` or `docker inspect`
+#     4. The secret file is destroyed after the RUN step completes
 #
-#   We intentionally avoid ENV so the values are NOT preserved in the
-#   final image layers, and do NOT appear in `docker inspect` output.
+# The secret file (vite_env) is a standard .env format:
+#   VITE_API_URL=https://...
+#   VITE_GCP_API_KEY=AIza...
+#   etc.
+#
+# Build command (local):
+#   docker build --secret id=vite_env,src=.env.production -t ballotbuddy-frontend .
+#
+# Cloud Build passes the file via a preparatory step (see cloudbuild.yaml).
 # ---------------------------------------------------------------------------
-ARG VITE_API_URL
-ARG VITE_GCP_PROJECT_ID
-ARG VITE_GCP_API_KEY
-ARG VITE_GCP_MESSAGING_SENDER_ID
-ARG VITE_GCP_APP_ID
-ARG VITE_GCP_VAPID_KEY
-ARG VITE_GA_MEASUREMENT_ID
-
-RUN VITE_API_URL=$VITE_API_URL \
-    VITE_GCP_PROJECT_ID=$VITE_GCP_PROJECT_ID \
-    VITE_GCP_API_KEY=$VITE_GCP_API_KEY \
-    VITE_GCP_MESSAGING_SENDER_ID=$VITE_GCP_MESSAGING_SENDER_ID \
-    VITE_GCP_APP_ID=$VITE_GCP_APP_ID \
-    VITE_GCP_VAPID_KEY=$VITE_GCP_VAPID_KEY \
-    VITE_GA_MEASUREMENT_ID=$VITE_GA_MEASUREMENT_ID \
+RUN --mount=type=secret,id=vite_env,target=/run/secrets/vite_env \
+    set -a && . /run/secrets/vite_env && set +a && \
     npm run build
 
 # ============================================================
