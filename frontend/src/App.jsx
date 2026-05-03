@@ -12,13 +12,13 @@ const TimelinePage = lazy(() => import("./pages/TimelinePage"));
 const CandidatesPage = lazy(() => import("./pages/CandidatesPage"));
 const VotePage = lazy(() => import("./pages/VotePage"));
 
-function PageLoader() {
+const PageLoader = () => {
   return (
     <div className="container" style={{ padding: "2rem" }}>
       <SkeletonLoader type="card" count={3} />
     </div>
   );
-}
+};
 
 export default function App() {
   return (

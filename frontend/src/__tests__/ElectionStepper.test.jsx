@@ -14,12 +14,13 @@ vi.mock("react-i18next", () => ({
 }));
 
 describe("JourneyPage (Election Stepper)", () => {
-  const renderPage = () =>
+  const renderPage = () => {
     render(
       <MemoryRouter>
         <JourneyPage />
       </MemoryRouter>,
     );
+  };
 
   it("renders all 7 election steps", () => {
     renderPage();

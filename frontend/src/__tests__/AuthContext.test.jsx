@@ -21,7 +21,7 @@ const TestComponent = () => {
         {isAuthenticated ? "authenticated" : "unauthenticated"}
       </div>
       <div data-testid="user-name">{user?.name || "none"}</div>
-      <button onClick={() => login("test@example.com", "password123")}>
+      <button onClick={() => login("test@example.com", "password123")}>  
         Login
       </button>
       <button onClick={logout}>Logout</button>
