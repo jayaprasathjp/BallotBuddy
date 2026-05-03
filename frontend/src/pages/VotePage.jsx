@@ -25,6 +25,13 @@ const MOCK_CANDIDATES = [
     name: "Meera Patel",
     party: "Green Future Party",
     partyColor: "#388e3c",
+    symbol: "🍃",
+  },
+];
+
+const VotePage = () => {
+  // existing component implementation
+};
     symbol: "🌿",
   },
   {
