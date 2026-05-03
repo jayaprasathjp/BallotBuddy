@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { chatApi } from "../services/api";
+import PropTypes from "prop-types";
 import "./ChatPage.css";
 
 const SUGGESTED_QUESTIONS = [
@@ -23,8 +24,8 @@ const AIResponseCard = ({ response, t }) => {
 
   const fullText = [
     response.explanation,
-    response.steps?.join(". "),
-    response.tips?.join(". "),
+    (response.steps ?? []).join(". "),
+    (response.tips ?? []).join(". "),
   ]
     .filter(Boolean)
     .join(". ");
@@ -53,11 +54,11 @@ const AIResponseCard = ({ response, t }) => {
         </div>
       )}
 
-      {response.steps?.length > 0 && (
+      {(response.steps ?? []).length > 0 && (
         <div className="response-section">
           <h3 className="response-section-title">📋 {t("chat.steps")}</h3>
           <ol className="response-steps" aria-label="Step-by-step guide">
-            {response.steps.map((step, i) => (
+            {(response.steps ?? []).map((step, i) => (
               <li key={i} className="response-step">
                 {step.replace(/^Step \d+:\s*/i, "")}
               </li>
@@ -73,11 +74,11 @@ const AIResponseCard = ({ response, t }) => {
         </div>
       )}
 
-      {response.checklist?.length > 0 && (
+      {(response.checklist ?? []).length > 0 && (
         <div className="response-section">
           <h3 className="response-section-title">✅ {t("chat.checklist")}</h3>
           <ul className="response-checklist" aria-label="Checklist">
-            {response.checklist.map((item, i) => (
+            {(response.checklist ?? []).map((item, i) => (
               <li key={i} className="checklist-item">
                 <span className="checklist-icon" aria-hidden="true">
                   ☐
@@ -89,10 +90,10 @@ const AIResponseCard = ({ response, t }) => {
         </div>
       )}
 
-      {response.tips?.length > 0 && (
+      {(response.tips ?? []).length > 0 && (
         <div className="response-section response-tips">
           <h3 className="response-section-title">💡 {t("chat.tips")}</h3>
-          {response.tips.map((tip, i) => (
+          {(response.tips ?? []).map((tip, i) => (
             <p key={i} className="tip-item">
               → {tip}
             </p>
@@ -100,10 +101,10 @@ const AIResponseCard = ({ response, t }) => {
         </div>
       )}
 
-      {response.relatedTopics?.length > 0 && (
+      {(response.relatedTopics ?? []).length > 0 && (
         <div className="related-topics">
           <span className="related-label">{t("chat.related")}:</span>
-          {response.relatedTopics.map((topic) => (
+          {(response.relatedTopics ?? []).map((topic) => (
             <span key={topic} className="related-chip">
               {topic}
             </span>
@@ -112,7 +113,19 @@ const AIResponseCard = ({ response, t }) => {
       )}
     </div>
   );
-}
+};
+
+AIResponseCard.propTypes = {
+  response: PropTypes.shape({
+    explanation: PropTypes.string,
+    steps: PropTypes.arrayOf(PropTypes.string),
+    timeline: PropTypes.string,
+    checklist: PropTypes.arrayOf(PropTypes.string),
+    tips: PropTypes.arrayOf(PropTypes.string),
+    relatedTopics: PropTypes.arrayOf(PropTypes.string),
+  }).isRequired,
+  t: PropTypes.func.isRequired,
+};
 
 export default function ChatPage() {
   const { t, i18n } = useTranslation();
@@ -147,8 +160,8 @@ export default function ChatPage() {
               role: "model",
               content: [
                 m.response.explanation,
-                m.response.steps?.join(". "),
-                m.response.tips?.join(". "),
+                (m.response.steps ?? []).join(". "),
+                (m.response.tips ?? []).join(". "),
               ]
                 .filter(Boolean)
                 .join(". "),

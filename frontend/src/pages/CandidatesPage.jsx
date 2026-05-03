@@ -5,9 +5,12 @@ import { candidatesApi } from "../services/api";
 import SkeletonLoader from "../components/SkeletonLoader";
 import "./CandidatesPage.css";
 
+import PropTypes from "prop-types";
+
 const CandidateCard = ({ candidate, selected, onSelect, t }) => {
   return (
-    <article
+    <div
+      role="option"
       className={`candidate-card card ${selected ? "selected" : ""}`}
       aria-selected={selected}
       aria-label={`Candidate: ${candidate.name}, Party: ${candidate.party}`}
@@ -63,9 +66,9 @@ const CandidateCard = ({ candidate, selected, onSelect, t }) => {
             </span>
           </div>
         </div>
-        {candidate.manifesto?.length > 0 && (
+        {(candidate.manifesto ?? []).length > 0 && (
           <div className="manifesto-chips">
-            {candidate.manifesto.slice(0, 3).map((item) => (
+            {(candidate.manifesto ?? []).slice(0, 3).map((item) => (
               <span key={item} className="manifesto-chip">
                 {item}
               </span>
@@ -74,6 +77,7 @@ const CandidateCard = ({ candidate, selected, onSelect, t }) => {
         )}
       </div>
       <button
+        type="button"
         className={`btn btn-sm ${selected ? "btn-primary" : "btn-secondary"} compare-toggle`}
         onClick={() => onSelect(candidate.id)}
         aria-pressed={selected}
@@ -85,9 +89,27 @@ const CandidateCard = ({ candidate, selected, onSelect, t }) => {
       >
         {selected ? "✓ Selected" : "+ Compare"}
       </button>
-    </article>
+    </div>
   );
-}
+};
+
+CandidateCard.propTypes = {
+  candidate: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    name: PropTypes.string.isRequired,
+    party: PropTypes.string.isRequired,
+    partyColor: PropTypes.string,
+    imageInitial: PropTypes.string,
+    education: PropTypes.string,
+    experience: PropTypes.string,
+    assets: PropTypes.string,
+    criminalCases: PropTypes.number,
+    manifesto: PropTypes.arrayOf(PropTypes.string),
+  }).isRequired,
+  selected: PropTypes.bool,
+  onSelect: PropTypes.func,
+  t: PropTypes.func.isRequired,
+};
 
 export default function CandidatesPage() {
   const { t } = useTranslation();

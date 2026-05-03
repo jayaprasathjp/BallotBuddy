@@ -1,4 +1,5 @@
 // src/components/SkeletonLoader.jsx
+import PropTypes from "prop-types";
 import "./SkeletonLoader.css";
 
 export default function SkeletonLoader({ type = "card", count = 1 }) {
@@ -78,3 +79,8 @@ export default function SkeletonLoader({ type = "card", count = 1 }) {
     </>
   );
 }
+
+SkeletonLoader.propTypes = {
+  type: PropTypes.string,
+  count: PropTypes.number,
+};
