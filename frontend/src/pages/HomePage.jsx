@@ -171,7 +171,7 @@ export default function HomePage() {
           >
             How BallotBuddy Works
           </h2>
-          <div className="steps-flow">
+          <ul className="steps-flow">
             {[
               {
                 step: 1,
@@ -198,7 +198,7 @@ export default function HomePage() {
                 desc: "Practice with our simulator and vote on election day",
               },
             ].map((item, i) => (
-              <div
+              <li
                 key={item.step}
                 className="flow-item"
                 aria-label={`Step ${item.step}: ${item.title}`}
@@ -216,9 +216,9 @@ export default function HomePage() {
                     →
                   </div>
                 )}
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
 

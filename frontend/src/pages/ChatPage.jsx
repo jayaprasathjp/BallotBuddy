@@ -93,22 +93,26 @@ const AIResponseCard = ({ response, t }) => {
       {(response.tips ?? []).length > 0 && (
         <div className="response-section response-tips">
           <h3 className="response-section-title">💡 {t("chat.tips")}</h3>
-          {(response.tips ?? []).map((tip, i) => (
-            <p key={i} className="tip-item">
-              → {tip}
-            </p>
-          ))}
+          <ul className="tip-list">
+            {(response.tips ?? []).map((tip, i) => (
+              <li key={i} className="tip-item">
+                → {tip}
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 
       {(response.relatedTopics ?? []).length > 0 && (
         <div className="related-topics">
           <span className="related-label">{t("chat.related")}:</span>
-          {(response.relatedTopics ?? []).map((topic) => (
-            <span key={topic} className="related-chip">
-              {topic}
-            </span>
-          ))}
+          <ul className="related-topics-list">
+            {(response.relatedTopics ?? []).map((topic) => (
+              <li key={topic} className="related-chip">
+                {topic}
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </div>
@@ -242,19 +246,20 @@ export default function ChatPage() {
         {/* Suggested Questions Sidebar */}
         <aside className="chat-sidebar" aria-label="Suggested questions">
           <h2 className="sidebar-title">Quick Questions</h2>
-          <div className="suggested-questions">
+          <ul className="suggested-questions">
             {SUGGESTED_QUESTIONS.map((key) => (
-              <button
-                key={key}
-                className="suggested-btn"
-                onClick={() => sendMessage(t(key))}
-                aria-label={`Ask: ${t(key)}`}
-                disabled={isLoading}
-              >
-                {t(key)}
-              </button>
+              <li key={key}>
+                <button
+                  className="suggested-btn"
+                  onClick={() => sendMessage(t(key))}
+                  aria-label={`${t("chat.ask")}: ${t(key)}`}
+                  disabled={isLoading}
+                >
+                  {t(key)}
+                </button>
+              </li>
             ))}
-          </div>
+          </ul>
           <div className="chat-info-box">
             <p>🔒 Powered by Google Gemini AI</p>
             <p>📚 Based on ECI Guidelines</p>
@@ -263,15 +268,15 @@ export default function ChatPage() {
         </aside>
 
         {/* Main Chat Area */}
-        <div className="chat-main" role="main">
-          <div
+        <main className="chat-main">
+          <ul
             className="chat-messages"
             role="log"
             aria-live="polite"
             aria-label="Chat messages"
           >
             {messages.length === 0 && (
-              <div className="chat-empty" role="status">
+              <li className="chat-empty" role="status">
                 <div className="chat-empty-icon" aria-hidden="true">
                   🗳️
                 </div>
@@ -280,27 +285,27 @@ export default function ChatPage() {
                   I can help with voter registration, election steps, documents
                   needed, and more.
                 </p>
-              </div>
+              </li>
             )}
 
             {messages.map((msg) => (
-              <div key={msg.id} className={`message-row ${msg.role}`}>
+              <li key={msg.id} className={`message-row ${msg.role}`}>
                 {msg.role === "user" ? (
                   <div
                     className="user-bubble"
                     role="article"
-                    aria-label={`You said: ${msg.content}`}
+                    aria-label={`${t("chat.you_said")}: ${msg.content}`}
                   >
                     {msg.content}
                   </div>
                 ) : (
                   <AIResponseCard response={msg.response} t={t} />
                 )}
-              </div>
+              </li>
             ))}
 
             {isLoading && (
-              <div
+              <li
                 className="message-row model"
                 role="status"
                 aria-label={t("chat.thinking")}
@@ -316,17 +321,19 @@ export default function ChatPage() {
                   </div>
                   <span className="sr-only">{t("chat.thinking")}</span>
                 </div>
-              </div>
+              </li>
             )}
 
             {error && (
-              <div className="chat-error" role="alert" aria-live="assertive">
-                ⚠️ {error}
-              </div>
+              <li className="message-row model">
+                <div className="chat-error" role="alert" aria-live="assertive">
+                  ⚠️ {error}
+                </div>
+              </li>
             )}
 
             <div ref={messagesEndRef} />
-          </div>
+          </ul>
 
           {/* Input Area */}
           <div
@@ -374,7 +381,7 @@ export default function ChatPage() {
               </div>
             </div>
           </div>
-        </div>
+        </main>
       </div>
     </div>
   );

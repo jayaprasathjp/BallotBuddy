@@ -45,6 +45,8 @@
 }
 
 .suggested-questions {
+  list-style: none;
+  padding: 0;
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
@@ -90,12 +92,13 @@
 }
 
 .chat-messages {
+  list-style: none;
+  padding: var(--spacing-xl);
   flex: 1;
   overflow-y: auto;
   background: var(--bg-surface);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
-  padding: var(--spacing-xl);
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);
@@ -229,10 +232,21 @@
   border-radius: var(--border-radius-sm);
   padding: var(--spacing-md);
 }
+.tip-list {
+  list-style: none;
+  padding: 0;
+}
 .tip-item {
   color: var(--text-secondary);
   margin-bottom: var(--spacing-xs);
   font-size: var(--font-size-sm);
+}
+.related-topics-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
 }
 .related-topics {
   display: flex;

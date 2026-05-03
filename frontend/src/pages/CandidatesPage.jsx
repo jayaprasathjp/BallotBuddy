@@ -10,9 +10,7 @@ import PropTypes from "prop-types";
 const CandidateCard = ({ candidate, selected, onSelect, t }) => {
   return (
     <li
-      role="option"
       className={`candidate-card card ${selected ? "selected" : ""}`}
-      aria-selected={selected}
       aria-label={`Candidate: ${candidate.name}, Party: ${candidate.party}`}
     >
       <div
@@ -36,10 +34,7 @@ const CandidateCard = ({ candidate, selected, onSelect, t }) => {
         >
           {candidate.party}
         </div>
-        <ul
-          className="candidate-meta"
-          aria-label="Candidate details"
-        >
+        <ul className="candidate-meta" aria-label="Candidate details">
           <li>
             <span className="meta-label">{t("candidates.education")}:</span>{" "}
             {candidate.education}
@@ -243,10 +238,7 @@ export default function CandidatesPage() {
         )}
 
         {/* Candidate Grid */}
-        <ul
-          className="candidates-grid"
-          aria-label="All candidates"
-        >
+        <ul className="candidates-grid" aria-label="All candidates">
           {candidates.map((candidate) => (
             <CandidateCard
               key={candidate.id}

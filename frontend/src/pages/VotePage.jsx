@@ -133,7 +133,7 @@ export default function VotePage() {
 
         {/* Select Candidate */}
         {step === "select" && (
-          <div className="ballot-paper" role="main" aria-label="Ballot paper">
+          <main className="ballot-paper" aria-label="Ballot paper">
             <div className="ballot-header">
               <h2>🗳️ BALLOT PAPER</h2>
               <p>Delhi East Constituency — General Election 2024</p>
@@ -212,14 +212,13 @@ export default function VotePage() {
             >
               {t("vote.cast_vote")} →
             </button>
-          </div>
+          </main>
         )}
 
         {/* Confirm */}
         {step === "confirm" && selectedCandidate && (
-          <div
+          <dialog
             className="confirm-panel"
-            role="dialog"
             aria-labelledby="confirm-heading"
             aria-modal="true"
           >
@@ -269,7 +268,7 @@ export default function VotePage() {
                 {isLoading ? "⏳ Processing..." : "✓ Confirm Vote"}
               </button>
             </div>
-          </div>
+          </dialog>
         )}
 
         {/* VVPAT Animation */}
@@ -299,7 +298,7 @@ export default function VotePage() {
 
         {/* Receipt */}
         {step === "receipt" && receipt && (
-          <div className="receipt-panel" role="main" aria-label="Vote receipt">
+          <main className="receipt-panel" aria-label="Vote receipt">
             <div className="receipt-success">
               <div className="success-icon" aria-hidden="true">
                 ✅
@@ -342,7 +341,7 @@ export default function VotePage() {
             >
               🔄 {t("vote.back")}
             </button>
-          </div>
+          </main>
         )}
       </div>
     </div>

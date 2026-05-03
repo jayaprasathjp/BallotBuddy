@@ -177,15 +177,15 @@ export default function TimelinePage() {
             })}
           </ol>
         ) : (
-          <div
+          <ul
             className="calendar-grid"
-            role="region"
-            aria-label="Calendar view of election events"
+            role="list"
+            aria-label="Election Calendar Grid"
           >
             {events.map((event) => {
               const date = new Date(event.date);
               return (
-                <div
+                <li
                   key={event.id}
                   className={`cal-event card ${event.completed ? "completed" : ""} ${event.important ? "important" : ""}`}
                   style={{
@@ -209,10 +209,10 @@ export default function TimelinePage() {
                       <div className="cal-type">{event.type}</div>
                     </div>
                   </div>
-                </div>
+                </li>
               );
             })}
-          </div>
+          </ul>
         )}
       </div>
     </div>
