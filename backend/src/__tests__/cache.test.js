@@ -99,10 +99,10 @@ describe("Cache Service – clear", () => {
 
 describe("Cache Service – stats", () => {
   it("should report zero size on an empty cache", () => {
-    const s = cache.stats();
-    expect(s.size).toBe(0);
-    expect(s.maxEntries).toBeGreaterThan(0);
-    expect(s.defaultTtlMs).toBeGreaterThan(0);
+    const cacheStats = cache.stats();
+    expect(cacheStats.size).toBe(0);
+    expect(cacheStats.maxEntries).toBeGreaterThan(0);
+    expect(cacheStats.defaultTtlMs).toBeGreaterThan(0);
   });
 
   it("should report correct size after adding entries", () => {
