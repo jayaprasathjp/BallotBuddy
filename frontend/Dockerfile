@@ -48,17 +48,11 @@ RUN --mount=type=secret,id=vite_env,target=/run/secrets/vite_env \
 # ============================================================
 # Stage 2: Serve with nginx
 # ============================================================
-# SAFETY NOTE – nginx:alpine and root:
-#   nginx:alpine ships uid 101 ("nginx"). The master process binds
-#   port 80 and MUST start as root (Linux capability NET_BIND_SERVICE
-#   requires uid 0 for ports < 1024). After binding, nginx immediately
-#   drops to the "nginx" user for all worker processes (configured via
-#   the `user nginx;` directive in nginx.conf).
-#
-#   We explicitly set USER nginx AFTER the chown so the image metadata
-#   reflects a non-root intent, and any exec into the container lands
-#   as "nginx", not "root". The CMD uses the nginx master which
-#   re-acquires root transiently only to bind the socket.
+# SAFETY NOTE – nginx:alpine, USER nginx, and port 8080:
+#   nginx:alpine ships uid 101 ("nginx"). We run nginx as that user
+#   (USER nginx below). Port 8080 is non-privileged, so nginx can bind
+#   it without root. Cloud Run routes external HTTPS traffic to port 8080.
+#   This is the correct Cloud Run + non-root nginx pattern.
 # ============================================================
 FROM nginx:alpine
 WORKDIR /usr/share/nginx/html
@@ -85,5 +79,5 @@ COPY --chown=root:root --chmod=644 nginx.conf /etc/nginx/conf.d/default.conf
 # immediately forks workers as the "nginx" user (uid 101).
 USER nginx
 
-EXPOSE 80
+EXPOSE 8080
 CMD ["nginx", "-g", "daemon off;"]

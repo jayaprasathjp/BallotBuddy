@@ -38,7 +38,6 @@ steps:
 
   # ─── Frontend ─────────────────────────────────────────────────────────
   # Step 1: Write VITE_* substitution values to a temp env file in /workspace.
-  # Cloud Build's docker builder does not support --secret natively, so we
   # create the file here and mount it in the next step via DOCKER_BUILDKIT.
   - name: 'bash'
     id: 'write-frontend-env'
@@ -90,7 +89,7 @@ steps:
       - '--region=${_REGION}'
       - '--platform=managed'
       - '--allow-unauthenticated'
-      - '--port=80'
+      - '--port=8080'
       - '--memory=256Mi'
     waitFor: ['push-frontend']
 
