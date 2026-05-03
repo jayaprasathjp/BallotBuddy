@@ -1,5 +1,5 @@
 // src/context/AuthContext.jsx
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from "react";
 
 const AuthContext = createContext(null);
 
@@ -9,12 +9,12 @@ export const AuthProvider = ({ children }) => {
 
   // Initialize from localStorage on mount
   useEffect(() => {
-    let guestId = localStorage.getItem('ballotbuddy_guest_id');
+    let guestId = localStorage.getItem("ballotbuddy_guest_id");
 
     if (!guestId) {
       // crypto.randomUUID() uses the browser's CSPRNG (SubtleCrypto)
       guestId = `guest_${crypto.randomUUID()}`;
-      localStorage.setItem('ballotbuddy_guest_id', guestId);
+      localStorage.setItem("ballotbuddy_guest_id", guestId);
     }
 
     setUser({ userId: guestId, isGuest: true });
@@ -22,11 +22,13 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      isLoading, 
-      isAuthenticated: false // Always false since there is no login
-    }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isLoading,
+        isAuthenticated: false, // Always false since there is no login
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -34,7 +36,7 @@ export const AuthProvider = ({ children }) => {
 
 export const useAuth = () => {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
+  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
   return ctx;
 };
 

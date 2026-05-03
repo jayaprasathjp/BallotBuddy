@@ -4,7 +4,9 @@ import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import { setupCounter } from './counter.ts'
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
+const appElement = document.querySelector<HTMLDivElement>('#app');
+if (appElement) {
+  appElement.innerHTML = `
 <section id="center">
   <div class="hero">
     <img src="${heroImg}" class="base" width="170" height="179">
@@ -54,7 +56,10 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 </section>
 
 <div class="ticks"></div>
-<section id="spacer"></section>
-`
+`;
 
-setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
+  const counterButton = document.querySelector<HTMLButtonElement>('#counter');
+  if (counterButton) {
+    setupCounter(counterButton);
+  }
+}

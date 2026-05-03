@@ -15,13 +15,17 @@
   font-size: 1.4rem;
   cursor: pointer;
   box-shadow: var(--shadow-glow);
-  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+  transition:
+    transform var(--transition-normal),
+    box-shadow var(--transition-normal);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.a11y-fab:hover { transform: scale(1.1); }
+.a11y-fab:hover {
+  transform: scale(1.1);
+}
 
 .a11y-panel {
   position: absolute;
@@ -51,7 +55,9 @@
   gap: var(--spacing-sm);
 }
 
-.a11y-option:last-of-type { border-bottom: none; }
+.a11y-option:last-of-type {
+  border-bottom: none;
+}
 
 .a11y-option-label {
   font-size: var(--font-size-sm);
@@ -71,7 +77,9 @@
   flex-shrink: 0;
 }
 
-.a11y-toggle.on { background: var(--color-primary); }
+.a11y-toggle.on {
+  background: var(--color-primary);
+}
 
 .a11y-toggle-thumb {
   position: absolute;
@@ -84,7 +92,9 @@
   transition: transform var(--transition-normal);
 }
 
-.a11y-toggle.on .a11y-toggle-thumb { transform: translateX(20px); }
+.a11y-toggle.on .a11y-toggle-thumb {
+  transform: translateX(20px);
+}
 
 .a11y-font-controls {
   display: flex;
@@ -102,8 +112,13 @@
   transition: all var(--transition-fast);
 }
 
-.a11y-font-btn:hover:not(:disabled) { background: var(--color-primary); }
-.a11y-font-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.a11y-font-btn:hover:not(:disabled) {
+  background: var(--color-primary);
+}
+.a11y-font-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
 
 .a11y-close {
   width: 100%;
@@ -118,4 +133,7 @@
   transition: all var(--transition-fast);
 }
 
-.a11y-close:hover { color: var(--text-primary); background: var(--bg-glass-hover); }
+.a11y-close:hover {
+  color: var(--text-primary);
+  background: var(--bg-glass-hover);
+}

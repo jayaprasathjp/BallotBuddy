@@ -11,8 +11,8 @@
  * @module services/vertexai
  */
 
-const logger = require('./logger');
-const cache = require('./cache');
+const logger = require("./logger");
+const cache = require("./cache");
 
 const MOCK_DELAY_MS = 800;
 const MAX_OUTPUT_TOKENS = 1024;
@@ -22,9 +22,9 @@ const COMPARE_CACHE_TTL_MS = 30 * 60 * 1000;
 /** @type {typeof import('@google-cloud/vertexai').VertexAI | undefined} */
 let VertexAI;
 try {
-  ({ VertexAI } = require('@google-cloud/vertexai'));
+  ({ VertexAI } = require("@google-cloud/vertexai"));
 } catch {
-  logger.warn('Vertex AI SDK not available – falling back to mock mode');
+  logger.warn("Vertex AI SDK not available – falling back to mock mode");
 }
 
 // ─── Singleton client references (initialized once on first use) ──────────────
@@ -41,11 +41,11 @@ const getVertexClient = () => {
   if (!_vertexClient) {
     _vertexClient = new VertexAI({
       project: process.env.GOOGLE_CLOUD_PROJECT,
-      location: process.env.VERTEX_AI_LOCATION || 'us-central1',
+      location: process.env.VERTEX_AI_LOCATION || "us-central1",
     });
-    logger.info('Vertex AI client initialized', {
+    logger.info("Vertex AI client initialized", {
       project: process.env.GOOGLE_CLOUD_PROJECT,
-      location: process.env.VERTEX_AI_LOCATION || 'us-central1',
+      location: process.env.VERTEX_AI_LOCATION || "us-central1",
     });
   }
   return _vertexClient;
@@ -86,53 +86,61 @@ Guidelines:
 /** @type {Record<string, AIResponse>} */
 const MOCK_RESPONSES = {
   default: {
-    explanation: 'Voting is your fundamental right as a citizen. The election process involves several important steps to ensure fair and transparent democracy in India.',
+    explanation:
+      "Voting is your fundamental right as a citizen. The election process involves several important steps to ensure fair and transparent democracy in India.",
     steps: [
-      'Step 1: Check your eligibility (18+ years, Indian citizen)',
-      'Step 2: Register as a voter using Form 6 on the NVSP portal',
-      'Step 3: Verify your name on the Electoral Roll',
-      'Step 4: Collect your Voter ID card (EPIC)',
-      'Step 5: Visit your designated polling booth on election day',
-      'Step 6: Cast your vote using the EVM (Electronic Voting Machine)',
+      "Step 1: Check your eligibility (18+ years, Indian citizen)",
+      "Step 2: Register as a voter using Form 6 on the NVSP portal",
+      "Step 3: Verify your name on the Electoral Roll",
+      "Step 4: Collect your Voter ID card (EPIC)",
+      "Step 5: Visit your designated polling booth on election day",
+      "Step 6: Cast your vote using the EVM (Electronic Voting Machine)",
     ],
-    timeline: 'Voter registration is open year-round. Special Summary Revision periods occur annually (October–November).',
+    timeline:
+      "Voter registration is open year-round. Special Summary Revision periods occur annually (October–November).",
     checklist: [
-      'Check if you are 18+ years old',
-      'Confirm Indian citizenship',
-      'Have proof of address ready',
-      'Have identity proof ready',
-      'Know your polling booth location',
+      "Check if you are 18+ years old",
+      "Confirm Indian citizenship",
+      "Have proof of address ready",
+      "Have identity proof ready",
+      "Know your polling booth location",
     ],
     tips: [
-      'You can register online at voters.eci.gov.in',
-      'Carry your Voter ID card on polling day',
-      'The voting process takes approximately 5–10 minutes',
+      "You can register online at voters.eci.gov.in",
+      "Carry your Voter ID card on polling day",
+      "The voting process takes approximately 5–10 minutes",
     ],
-    relatedTopics: ['Electoral Roll Verification', 'Voter ID Card', 'Polling Booth Location'],
+    relatedTopics: [
+      "Electoral Roll Verification",
+      "Voter ID Card",
+      "Polling Booth Location",
+    ],
   },
   register: {
-    explanation: 'Voter registration in India is free and mandatory to exercise your right to vote. You can register online or visit your nearest Electoral Registration Officer.',
+    explanation:
+      "Voter registration in India is free and mandatory to exercise your right to vote. You can register online or visit your nearest Electoral Registration Officer.",
     steps: [
-      'Step 1: Visit voters.eci.gov.in or the Voter Helpline App',
-      'Step 2: Fill Form 6 (New Registration) with your details',
-      'Step 3: Upload required documents (age proof + address proof)',
-      'Step 4: Submit the form and note your reference number',
-      'Step 5: BLO (Booth Level Officer) will visit to verify details',
-      'Step 6: Receive your EPIC (Voter ID) card within 30 days',
+      "Step 1: Visit voters.eci.gov.in or the Voter Helpline App",
+      "Step 2: Fill Form 6 (New Registration) with your details",
+      "Step 3: Upload required documents (age proof + address proof)",
+      "Step 4: Submit the form and note your reference number",
+      "Step 5: BLO (Booth Level Officer) will visit to verify details",
+      "Step 6: Receive your EPIC (Voter ID) card within 30 days",
     ],
-    timeline: 'Registration applications are processed within 30 days. The Electoral Roll is published twice a year.',
+    timeline:
+      "Registration applications are processed within 30 days. The Electoral Roll is published twice a year.",
     checklist: [
-      'Age Proof: Birth Certificate, Passport, or Matriculation Certificate',
-      'Address Proof: Aadhar Card, Utility Bill, or Bank Passbook',
-      'Recent passport-size photograph',
-      'Mobile number for OTP verification',
+      "Age Proof: Birth Certificate, Passport, or Matriculation Certificate",
+      "Address Proof: Aadhar Card, Utility Bill, or Bank Passbook",
+      "Recent passport-size photograph",
+      "Mobile number for OTP verification",
     ],
     tips: [
-      'Use Form 8 to update your existing voter registration details',
-      'Form 7 is used to object to inclusion of someone else',
-      'You can track your application status online',
+      "Use Form 8 to update your existing voter registration details",
+      "Form 7 is used to object to inclusion of someone else",
+      "You can track your application status online",
     ],
-    relatedTopics: ['Electoral Roll', 'EPIC (Voter ID Card)', 'NVSP Portal'],
+    relatedTopics: ["Electoral Roll", "EPIC (Voter ID Card)", "NVSP Portal"],
   },
 };
 
@@ -144,7 +152,11 @@ const MOCK_RESPONSES = {
  */
 const getMockResponse = (userMessage) => {
   const msg = userMessage.toLowerCase();
-  if (msg.includes('register') || msg.includes('registration') || msg.includes('sign up')) {
+  if (
+    msg.includes("register") ||
+    msg.includes("registration") ||
+    msg.includes("sign up")
+  ) {
     return MOCK_RESPONSES.register;
   }
   return MOCK_RESPONSES.default;
@@ -156,10 +168,12 @@ const getMockResponse = (userMessage) => {
  * @returns {{ useMock: boolean, reason: string }}
  */
 const getMockStatus = () => {
-  if (!process.env.GOOGLE_CLOUD_PROJECT) return { useMock: true, reason: 'No Project ID configured' };
-  if (!VertexAI) return { useMock: true, reason: 'Vertex AI SDK not loaded' };
-  if (process.env.USE_MOCK_AI === 'true') return { useMock: true, reason: 'Forced by USE_MOCK_AI env var' };
-  return { useMock: false, reason: 'Live AI enabled' };
+  if (!process.env.GOOGLE_CLOUD_PROJECT)
+    return { useMock: true, reason: "No Project ID configured" };
+  if (!VertexAI) return { useMock: true, reason: "Vertex AI SDK not loaded" };
+  if (process.env.USE_MOCK_AI === "true")
+    return { useMock: true, reason: "Forced by USE_MOCK_AI env var" };
+  return { useMock: false, reason: "Live AI enabled" };
 };
 
 // ─── Public API ───────────────────────────────────────────────────────────────
@@ -174,23 +188,28 @@ const getMockStatus = () => {
  * @param {'en'|'hi'|'ta'} [language='en'] - Preferred response language
  * @returns {Promise<AIResponse>} Structured AI response object
  */
-const chat = async (userMessage, history = [], language = 'en') => {
-  const MODEL = process.env.VERTEX_AI_MODEL || 'gemini-2.5-flash';
+const chat = async (userMessage, history = [], language = "en") => {
+  const MODEL = process.env.VERTEX_AI_MODEL || "gemini-2.5-flash";
   const { useMock, reason } = getMockStatus();
 
-  logger.debug('Vertex AI request', { useMock, reason, language, model: MODEL });
+  logger.debug("Vertex AI request", {
+    useMock,
+    reason,
+    language,
+    model: MODEL,
+  });
 
   if (useMock) {
-    logger.info('Using mock AI response', { reason });
+    logger.info("Using mock AI response", { reason });
     await new Promise((r) => setTimeout(r, MOCK_DELAY_MS)); // Simulate processing delay
     return getMockResponse(userMessage);
   }
 
   // Check cache before hitting the API
-  const cacheKey = cache.makeKey('chat', userMessage, language);
+  const cacheKey = cache.makeKey("chat", userMessage, language);
   const cached = cache.get(cacheKey);
   if (cached) {
-    logger.info('Serving chat response from cache', { model: MODEL });
+    logger.info("Serving chat response from cache", { model: MODEL });
     return cached;
   }
 
@@ -199,11 +218,11 @@ const chat = async (userMessage, history = [], language = 'en') => {
     const generativeModel = vertexAI.getGenerativeModel({
       model: MODEL,
       systemInstruction: {
-        role: 'system',
+        role: "system",
         parts: [{ text: ELECTION_SYSTEM_PROMPT }],
       },
       generationConfig: {
-        responseMimeType: 'application/json',
+        responseMimeType: "application/json",
         temperature: 0.3,
         maxOutputTokens: MAX_OUTPUT_TOKENS,
       },
@@ -215,23 +234,28 @@ const chat = async (userMessage, history = [], language = 'en') => {
       parts: [{ text: msg.content }],
     }));
 
-    const languageInstruction = language !== 'en'
-      ? `\n\nIMPORTANT: Respond in ${language === 'hi' ? 'Hindi' : 'Tamil'} language.`
-      : '';
+    const languageInstruction =
+      language !== "en"
+        ? `\n\nIMPORTANT: Respond in ${language === "hi" ? "Hindi" : "Tamil"} language.`
+        : "";
 
     const chatSession = generativeModel.startChat({ history: chatHistory });
-    const result = await chatSession.sendMessage(userMessage + languageInstruction);
+    const result = await chatSession.sendMessage(
+      userMessage + languageInstruction,
+    );
     const responseText = result.response.candidates[0].content.parts[0].text;
 
     const parsed = JSON.parse(responseText);
-    logger.info('Vertex AI response received', { model: MODEL });
+    logger.info("Vertex AI response received", { model: MODEL });
 
     // Cache the successful response
     cache.set(cacheKey, parsed);
 
     return parsed;
   } catch (error) {
-    logger.error('Vertex AI error – falling back to mock', { error: error.message });
+    logger.error("Vertex AI error – falling back to mock", {
+      error: error.message,
+    });
     return getMockResponse(userMessage);
   }
 };
@@ -247,19 +271,22 @@ const compareCandidates = async (candidates) => {
   const { useMock } = getMockStatus();
 
   if (useMock) {
-    return `Based on the profiles, ${candidates[0]?.name || 'Candidate A'} has a background in ${candidates[0]?.education || 'public service'} with declared assets of ${candidates[0]?.assets || 'N/A'}. ${candidates[1]?.name || 'Candidate B'} brings experience in ${candidates[1]?.education || 'governance'}. Both candidates have filed their affidavits with the Election Commission. Voters are encouraged to review all credentials carefully before making their decision.`;
+    return `Based on the profiles, ${candidates[0]?.name || "Candidate A"} has a background in ${candidates[0]?.education || "public service"} with declared assets of ${candidates[0]?.assets || "N/A"}. ${candidates[1]?.name || "Candidate B"} brings experience in ${candidates[1]?.education || "governance"}. Both candidates have filed their affidavits with the Election Commission. Voters are encouraged to review all credentials carefully before making their decision.`;
   }
 
   // Check cache (30-minute TTL for candidate comparisons)
-  const cacheKey = cache.makeKey('compare', JSON.stringify(candidates.map((c) => c.name)));
+  const cacheKey = cache.makeKey(
+    "compare",
+    JSON.stringify(candidates.map((c) => c.name)),
+  );
   const cached = cache.get(cacheKey);
   if (cached) {
-    logger.info('Serving candidate comparison from cache');
+    logger.info("Serving candidate comparison from cache");
     return cached;
   }
 
   try {
-    const MODEL = process.env.VERTEX_AI_MODEL || 'gemini-2.5-flash';
+    const MODEL = process.env.VERTEX_AI_MODEL || "gemini-2.5-flash";
     const vertexAI = getVertexClient();
     const generativeModel = vertexAI.getGenerativeModel({
       model: MODEL,
@@ -275,8 +302,8 @@ const compareCandidates = async (candidates) => {
 
     return summary;
   } catch (error) {
-    logger.error('Candidate comparison AI error', { error: error.message });
-    return 'Unable to generate AI comparison at this time. Please review the candidate profiles directly.';
+    logger.error("Candidate comparison AI error", { error: error.message });
+    return "Unable to generate AI comparison at this time. Please review the candidate profiles directly.";
   }
 };
 

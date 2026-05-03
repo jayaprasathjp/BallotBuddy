@@ -2,20 +2,23 @@
  * Rate Limiter Middleware
  * Protects API routes from brute force and abuse.
  */
-const rateLimit = require('express-rate-limit');
-const logger = require('../services/logger');
+const rateLimit = require("express-rate-limit");
+const logger = require("../services/logger");
 
 /**
  * General API rate limiter (100 requests per 15 minutes per IP)
  */
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: process.env.NODE_ENV === 'test' ? 10000 : 100,
-  message: { success: false, error: 'Too many requests from this IP, please try again after 15 minutes.' },
+  max: process.env.NODE_ENV === "test" ? 10000 : 100,
+  message: {
+    success: false,
+    error: "Too many requests from this IP, please try again after 15 minutes.",
+  },
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req, res, next, options) => {
-    logger.warn('Rate limit exceeded', { ip: req.ip, path: req.path });
+    logger.warn("Rate limit exceeded", { ip: req.ip, path: req.path });
     res.status(options.statusCode).send(options.message);
   },
 });
@@ -25,14 +28,15 @@ const generalLimiter = rateLimit({
  */
 const chatLimiter = rateLimit({
   windowMs: 60 * 1000,
-  max: process.env.NODE_ENV === 'test' ? 10000 : 20,
+  max: process.env.NODE_ENV === "test" ? 10000 : 20,
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req, res) => {
-    logger.warn('Chat rate limit exceeded', { ip: req.ip });
+    logger.warn("Chat rate limit exceeded", { ip: req.ip });
     res.status(429).json({
       success: false,
-      error: 'Too many chat requests. Please wait a moment before asking again.',
+      error:
+        "Too many chat requests. Please wait a moment before asking again.",
     });
   },
 });
@@ -42,14 +46,14 @@ const chatLimiter = rateLimit({
  */
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: process.env.NODE_ENV === 'test' ? 10000 : 5,
+  max: process.env.NODE_ENV === "test" ? 10000 : 5,
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req, res) => {
-    logger.warn('Auth rate limit exceeded', { ip: req.ip });
+    logger.warn("Auth rate limit exceeded", { ip: req.ip });
     res.status(429).json({
       success: false,
-      error: 'Too many login attempts. Please try again in 15 minutes.',
+      error: "Too many login attempts. Please try again in 15 minutes.",
     });
   },
 });

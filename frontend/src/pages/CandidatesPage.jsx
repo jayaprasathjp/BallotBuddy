@@ -1,51 +1,89 @@
 // src/pages/CandidatesPage.jsx
-import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { candidatesApi } from '../services/api';
-import SkeletonLoader from '../components/SkeletonLoader';
-import './CandidatesPage.css';
+import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import { candidatesApi } from "../services/api";
+import SkeletonLoader from "../components/SkeletonLoader";
+import "./CandidatesPage.css";
 
 function CandidateCard({ candidate, selected, onSelect, t }) {
   return (
     <article
-      className={`candidate-card card ${selected ? 'selected' : ''}`}
+      className={`candidate-card card ${selected ? "selected" : ""}`}
       aria-selected={selected}
       aria-label={`Candidate: ${candidate.name}, Party: ${candidate.party}`}
     >
-      <div className="candidate-avatar" style={{ background: `${candidate.partyColor}20`, color: candidate.partyColor }} aria-hidden="true">
+      <div
+        className="candidate-avatar"
+        style={{
+          background: `${candidate.partyColor}20`,
+          color: candidate.partyColor,
+        }}
+        aria-hidden="true"
+      >
         {candidate.imageInitial || candidate.name[0]}
       </div>
       <div className="candidate-info">
         <h2 className="candidate-name">{candidate.name}</h2>
-        <div className="party-chip" style={{ background: `${candidate.partyColor}20`, color: candidate.partyColor }}>
+        <div
+          className="party-chip"
+          style={{
+            background: `${candidate.partyColor}20`,
+            color: candidate.partyColor,
+          }}
+        >
           {candidate.party}
         </div>
-        <div className="candidate-meta" role="list" aria-label="Candidate details">
-          <div role="listitem"><span className="meta-label">{t('candidates.education')}:</span> {candidate.education}</div>
-          <div role="listitem"><span className="meta-label">{t('candidates.experience')}:</span> {candidate.experience}</div>
-          <div role="listitem"><span className="meta-label">{t('candidates.assets')}:</span> {candidate.assets}</div>
+        <div
+          className="candidate-meta"
+          role="list"
+          aria-label="Candidate details"
+        >
           <div role="listitem">
-            <span className="meta-label">{t('candidates.criminal_cases')}:</span>{' '}
-            <span className={candidate.criminalCases > 0 ? 'text-danger' : 'text-success'}>
-              {candidate.criminalCases === 0 ? 'None' : candidate.criminalCases}
+            <span className="meta-label">{t("candidates.education")}:</span>{" "}
+            {candidate.education}
+          </div>
+          <div role="listitem">
+            <span className="meta-label">{t("candidates.experience")}:</span>{" "}
+            {candidate.experience}
+          </div>
+          <div role="listitem">
+            <span className="meta-label">{t("candidates.assets")}:</span>{" "}
+            {candidate.assets}
+          </div>
+          <div role="listitem">
+            <span className="meta-label">
+              {t("candidates.criminal_cases")}:
+            </span>{" "}
+            <span
+              className={
+                candidate.criminalCases > 0 ? "text-danger" : "text-success"
+              }
+            >
+              {candidate.criminalCases === 0 ? "None" : candidate.criminalCases}
             </span>
           </div>
         </div>
         {candidate.manifesto?.length > 0 && (
           <div className="manifesto-chips">
             {candidate.manifesto.slice(0, 3).map((item) => (
-              <span key={item} className="manifesto-chip">{item}</span>
+              <span key={item} className="manifesto-chip">
+                {item}
+              </span>
             ))}
           </div>
         )}
       </div>
       <button
-        className={`btn btn-sm ${selected ? 'btn-primary' : 'btn-secondary'} compare-toggle`}
+        className={`btn btn-sm ${selected ? "btn-primary" : "btn-secondary"} compare-toggle`}
         onClick={() => onSelect(candidate.id)}
         aria-pressed={selected}
-        aria-label={selected ? `Remove ${candidate.name} from comparison` : `Add ${candidate.name} to comparison`}
+        aria-label={
+          selected
+            ? `Remove ${candidate.name} from comparison`
+            : `Add ${candidate.name} to comparison`
+        }
       >
-        {selected ? '✓ Selected' : '+ Compare'}
+        {selected ? "✓ Selected" : "+ Compare"}
       </button>
     </article>
   );
@@ -60,7 +98,8 @@ export default function CandidatesPage() {
   const [isComparing, setIsComparing] = useState(false);
 
   useEffect(() => {
-    candidatesApi.list()
+    candidatesApi
+      .list()
       .then((res) => setCandidates(res.data.candidates || []))
       .catch(() => setCandidates([]))
       .finally(() => setIsLoading(false));
@@ -68,7 +107,9 @@ export default function CandidatesPage() {
 
   const toggleSelect = (id) => {
     setSelected((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id].slice(0, 4)
+      prev.includes(id)
+        ? prev.filter((x) => x !== id)
+        : [...prev, id].slice(0, 4),
     );
     setComparison(null);
   };
@@ -80,19 +121,26 @@ export default function CandidatesPage() {
       const res = await candidatesApi.compare(selected);
       setComparison(res.data);
     } catch (e) {
-      setComparison({ error: t('common.error') });
+      setComparison({ error: t("common.error") });
     } finally {
       setIsComparing(false);
     }
   };
 
-  if (isLoading) return (
-    <div className="container section">
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1rem' }}>
-        <SkeletonLoader type="candidate" count={4} />
+  if (isLoading)
+    return (
+      <div className="container section">
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+            gap: "1rem",
+          }}
+        >
+          <SkeletonLoader type="candidate" count={4} />
+        </div>
       </div>
-    </div>
-  );
+    );
 
   const selectedCandidates = candidates.filter((c) => selected.includes(c.id));
 
@@ -100,8 +148,8 @@ export default function CandidatesPage() {
     <div className="candidates-page">
       <div className="container">
         <div className="candidates-header">
-          <h1 className="candidates-title">👥 {t('candidates.title')}</h1>
-          <p className="candidates-subtitle">{t('candidates.subtitle')}</p>
+          <h1 className="candidates-title">👥 {t("candidates.title")}</h1>
+          <p className="candidates-subtitle">{t("candidates.subtitle")}</p>
 
           {selected.length >= 2 && (
             <div className="compare-bar" role="status" aria-live="polite">
@@ -112,29 +160,62 @@ export default function CandidatesPage() {
                 disabled={isComparing}
                 aria-label={`Compare ${selected.length} selected candidates`}
               >
-                {isComparing ? '🤖 Analyzing...' : `🤖 ${t('candidates.compare')}`}
+                {isComparing
+                  ? "🤖 Analyzing..."
+                  : `🤖 ${t("candidates.compare")}`}
               </button>
             </div>
           )}
 
           {selected.length === 0 && (
-            <p className="select-hint" role="note">{t('candidates.select_to_compare')}</p>
+            <p className="select-hint" role="note">
+              {t("candidates.select_to_compare")}
+            </p>
           )}
         </div>
 
         {/* AI Comparison Result */}
         {comparison && !comparison.error && (
-          <div className="comparison-panel" role="region" aria-label="AI comparison results">
-            <h2 className="comparison-title">🤖 {t('candidates.ai_comparison')}</h2>
+          <div
+            className="comparison-panel"
+            role="region"
+            aria-label="AI comparison results"
+          >
+            <h2 className="comparison-title">
+              🤖 {t("candidates.ai_comparison")}
+            </h2>
             <p className="comparison-summary">{comparison.summary}</p>
             <div className="comparison-cards" role="list">
               {comparison.candidates?.map((c) => (
-                <div key={c.id} className="compare-mini-card" role="listitem" aria-label={`${c.name} comparison summary`}>
-                  <div className="compare-avatar" style={{ background: `${c.partyColor}20`, color: c.partyColor }}>{c.imageInitial}</div>
+                <div
+                  key={c.id}
+                  className="compare-mini-card"
+                  role="listitem"
+                  aria-label={`${c.name} comparison summary`}
+                >
+                  <div
+                    className="compare-avatar"
+                    style={{
+                      background: `${c.partyColor}20`,
+                      color: c.partyColor,
+                    }}
+                  >
+                    {c.imageInitial}
+                  </div>
                   <div className="compare-name">{c.name}</div>
-                  <div className="compare-party" style={{ color: c.partyColor }}>{c.party}</div>
-                  <div className="compare-detail"><b>Assets:</b> {c.assets}</div>
-                  <div className="compare-detail"><b>Cases:</b> {c.criminalCases === 0 ? 'None' : c.criminalCases}</div>
+                  <div
+                    className="compare-party"
+                    style={{ color: c.partyColor }}
+                  >
+                    {c.party}
+                  </div>
+                  <div className="compare-detail">
+                    <b>Assets:</b> {c.assets}
+                  </div>
+                  <div className="compare-detail">
+                    <b>Cases:</b>{" "}
+                    {c.criminalCases === 0 ? "None" : c.criminalCases}
+                  </div>
                 </div>
               ))}
             </div>
@@ -142,7 +223,11 @@ export default function CandidatesPage() {
         )}
 
         {/* Candidate Grid */}
-        <div className="candidates-grid" role="list" aria-label="All candidates">
+        <div
+          className="candidates-grid"
+          role="list"
+          aria-label="All candidates"
+        >
           {candidates.map((candidate) => (
             <CandidateCard
               key={candidate.id}

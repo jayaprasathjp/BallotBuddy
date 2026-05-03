@@ -8,7 +8,7 @@
  * @module services/envValidator
  */
 
-const logger = require('./logger');
+const logger = require("./logger");
 
 /**
  * @typedef {Object} EnvRule
@@ -22,45 +22,45 @@ const logger = require('./logger');
 /** @type {EnvRule[]} */
 const ENV_RULES = [
   {
-    name: 'PORT',
+    name: "PORT",
     required: false,
-    default: '3001',
+    default: "3001",
     pattern: /^\d+$/,
-    hint: 'Must be a valid port number (e.g. 3001)',
+    hint: "Must be a valid port number (e.g. 3001)",
   },
   {
-    name: 'NODE_ENV',
+    name: "NODE_ENV",
     required: false,
-    default: 'development',
+    default: "development",
     pattern: /^(development|production|test)$/,
-    hint: 'Must be one of: development, production, test',
+    hint: "Must be one of: development, production, test",
   },
   {
-    name: 'ALLOWED_ORIGINS',
+    name: "ALLOWED_ORIGINS",
     required: false,
-    default: 'http://localhost:5173',
-    hint: 'Comma-separated list of allowed CORS origins, or * for all',
+    default: "http://localhost:5173",
+    hint: "Comma-separated list of allowed CORS origins, or * for all",
   },
   {
-    name: 'VERTEX_AI_MODEL',
+    name: "VERTEX_AI_MODEL",
     required: false,
-    default: 'gemini-2.5-flash',
-    hint: 'The Vertex AI model name to use (e.g. gemini-2.5-flash)',
+    default: "gemini-2.5-flash",
+    hint: "The Vertex AI model name to use (e.g. gemini-2.5-flash)",
   },
   {
-    name: 'VERTEX_AI_LOCATION',
+    name: "VERTEX_AI_LOCATION",
     required: false,
-    default: 'us-central1',
-    hint: 'Google Cloud region for Vertex AI (e.g. us-central1)',
+    default: "us-central1",
+    hint: "Google Cloud region for Vertex AI (e.g. us-central1)",
   },
 ];
 
 /** Variables required only in production (live AI mode) */
 const PRODUCTION_RULES = [
   {
-    name: 'GOOGLE_CLOUD_PROJECT',
+    name: "GOOGLE_CLOUD_PROJECT",
     required: true,
-    hint: 'Your GCP project ID (e.g. my-project-123456)',
+    hint: "Your GCP project ID (e.g. my-project-123456)",
   },
 ];
 
@@ -77,19 +77,19 @@ const validateRule = (rule) => {
     if (rule.required) {
       return {
         valid: false,
-        error: `Missing required env var: ${rule.name}. Hint: ${rule.hint || 'Check .env.example'}`,
+        error: `Missing required env var: ${rule.name}. Hint: ${rule.hint || "Check .env.example"}`,
       };
     }
     return {
       valid: true,
-      warning: `${rule.name} not set – using default: ${rule.default || '(none)'}`,
+      warning: `${rule.name} not set – using default: ${rule.default || "(none)"}`,
     };
   }
 
   if (rule.pattern && !rule.pattern.test(value)) {
     return {
       valid: false,
-      error: `Invalid value for ${rule.name}="${value}". ${rule.hint || ''}`,
+      error: `Invalid value for ${rule.name}="${value}". ${rule.hint || ""}`,
     };
   }
 
@@ -107,8 +107,8 @@ const validateEnv = () => {
   const errors = [];
   const warnings = [];
 
-  const isProduction = process.env.NODE_ENV === 'production';
-  const isLiveAI = process.env.USE_MOCK_AI !== 'true';
+  const isProduction = process.env.NODE_ENV === "production";
+  const isLiveAI = process.env.USE_MOCK_AI !== "true";
 
   // Validate base rules
   for (const rule of ENV_RULES) {
@@ -138,13 +138,15 @@ const validateEnv = () => {
   const valid = errors.length === 0;
 
   if (valid) {
-    logger.info('[ENV] Environment validation passed', {
-      nodeEnv: process.env.NODE_ENV || 'development',
-      mockAI: process.env.USE_MOCK_AI !== 'false',
-      model: process.env.VERTEX_AI_MODEL || 'gemini-2.5-flash',
+    logger.info("[ENV] Environment validation passed", {
+      nodeEnv: process.env.NODE_ENV || "development",
+      mockAI: process.env.USE_MOCK_AI !== "false",
+      model: process.env.VERTEX_AI_MODEL || "gemini-2.5-flash",
     });
   } else {
-    logger.error('[ENV] Environment validation failed', { errorCount: errors.length });
+    logger.error("[ENV] Environment validation failed", {
+      errorCount: errors.length,
+    });
   }
 
   return { valid, errors, warnings };

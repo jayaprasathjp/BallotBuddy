@@ -7,7 +7,7 @@
  * @module services/cache
  */
 
-const logger = require('./logger');
+const logger = require("./logger");
 
 /**
  * @typedef {Object} CacheEntry
@@ -33,7 +33,7 @@ const MAX_ENTRIES = 500;
  * @returns {string} A normalized cache key string
  */
 const makeKey = (prefix, ...parts) =>
-  `${prefix}::${parts.map((p) => String(p).trim().toLowerCase()).join('|')}`;
+  `${prefix}::${parts.map((p) => String(p).trim().toLowerCase()).join("|")}`;
 
 /**
  * Retrieves a cached value by key.
@@ -48,11 +48,11 @@ const get = (key) => {
 
   if (Date.now() >= entry.expiresAt) {
     store.delete(key);
-    logger.debug('Cache expired', { key });
+    logger.debug("Cache expired", { key });
     return undefined;
   }
 
-  logger.debug('Cache hit', { key });
+  logger.debug("Cache hit", { key });
   return entry.value;
 };
 
@@ -69,11 +69,11 @@ const set = (key, value, ttlMs = DEFAULT_TTL_MS) => {
   if (store.size >= MAX_ENTRIES) {
     const oldestKey = store.keys().next().value;
     store.delete(oldestKey);
-    logger.debug('Cache eviction (capacity)', { evicted: oldestKey });
+    logger.debug("Cache eviction (capacity)", { evicted: oldestKey });
   }
 
   store.set(key, { value, expiresAt: Date.now() + ttlMs });
-  logger.debug('Cache set', { key, ttlMs });
+  logger.debug("Cache set", { key, ttlMs });
 };
 
 /**
@@ -89,7 +89,7 @@ const invalidate = (key) => {
  */
 const clear = () => {
   store.clear();
-  logger.info('Cache cleared');
+  logger.info("Cache cleared");
 };
 
 /**

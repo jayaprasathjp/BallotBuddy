@@ -3,11 +3,14 @@
  * Wraps Firebase Admin Firestore with reusable CRUD helpers.
  * Initializes Firebase Admin SDK once using environment credentials.
  */
-const { Firestore } = require('@google-cloud/firestore');
+const { Firestore } = require("@google-cloud/firestore");
 
 // Initialize Firestore (Native Google Cloud SDK)
 const db = new Firestore({
-  projectId: process.env.GOOGLE_CLOUD_PROJECT || process.env.FIREBASE_PROJECT_ID || 'ballotbuddy-demo',
+  projectId:
+    process.env.GOOGLE_CLOUD_PROJECT ||
+    process.env.FIREBASE_PROJECT_ID ||
+    "ballotbuddy-demo",
   keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS, // Used in local dev
 });
 
@@ -48,10 +51,16 @@ const createDoc = async (collection, data) => {
  * Set/overwrite a document by ID
  */
 const setDoc = async (collection, docId, data) => {
-  await db.collection(collection).doc(docId).set({
-    ...data,
-    updatedAt: Firestore.FieldValue.serverTimestamp(),
-  }, { merge: true });
+  await db
+    .collection(collection)
+    .doc(docId)
+    .set(
+      {
+        ...data,
+        updatedAt: Firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true },
+    );
   return { id: docId, ...data };
 };
 
@@ -66,8 +75,19 @@ const deleteDoc = async (collection, docId) => {
  * Query documents with a where clause
  */
 const queryDocs = async (collection, field, operator, value) => {
-  const snap = await db.collection(collection).where(field, operator, value).get();
+  const snap = await db
+    .collection(collection)
+    .where(field, operator, value)
+    .get();
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 };
 
-module.exports = { db, getDoc, getDocs, createDoc, setDoc, deleteDoc, queryDocs };
+module.exports = {
+  db,
+  getDoc,
+  getDocs,
+  createDoc,
+  setDoc,
+  deleteDoc,
+  queryDocs,
+};

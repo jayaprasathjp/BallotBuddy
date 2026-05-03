@@ -1,5 +1,5 @@
 // src/context/AccessibilityContext.jsx
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from "react";
 
 const AccessibilityContext = createContext(null);
 
@@ -10,20 +10,25 @@ export const AccessibilityProvider = ({ children }) => {
 
   // Apply CSS custom properties when settings change
   useEffect(() => {
-    document.documentElement.style.setProperty('--font-scale', fontScale);
+    document.documentElement.style.setProperty("--font-scale", fontScale);
     if (highContrast) {
-      document.documentElement.classList.add('high-contrast');
+      document.documentElement.classList.add("high-contrast");
     } else {
-      document.documentElement.classList.remove('high-contrast');
+      document.documentElement.classList.remove("high-contrast");
     }
     // Persist
-    localStorage.setItem('bb_accessibility', JSON.stringify({ highContrast, fontScale, screenReaderMode }));
+    localStorage.setItem(
+      "bb_accessibility",
+      JSON.stringify({ highContrast, fontScale, screenReaderMode }),
+    );
   }, [highContrast, fontScale, screenReaderMode]);
 
   // Load persisted settings
   useEffect(() => {
     try {
-      const saved = JSON.parse(localStorage.getItem('bb_accessibility') || '{}');
+      const saved = JSON.parse(
+        localStorage.getItem("bb_accessibility") || "{}",
+      );
       if (saved.highContrast) setHighContrast(saved.highContrast);
       if (saved.fontScale) setFontScale(saved.fontScale);
       if (saved.screenReaderMode) setScreenReaderMode(saved.screenReaderMode);
@@ -35,11 +40,18 @@ export const AccessibilityProvider = ({ children }) => {
   const resetFontSize = () => setFontScale(1);
 
   return (
-    <AccessibilityContext.Provider value={{
-      highContrast, setHighContrast,
-      fontScale, increaseFontSize, decreaseFontSize, resetFontSize,
-      screenReaderMode, setScreenReaderMode,
-    }}>
+    <AccessibilityContext.Provider
+      value={{
+        highContrast,
+        setHighContrast,
+        fontScale,
+        increaseFontSize,
+        decreaseFontSize,
+        resetFontSize,
+        screenReaderMode,
+        setScreenReaderMode,
+      }}
+    >
       {children}
     </AccessibilityContext.Provider>
   );
@@ -47,7 +59,10 @@ export const AccessibilityProvider = ({ children }) => {
 
 export const useAccessibility = () => {
   const ctx = useContext(AccessibilityContext);
-  if (!ctx) throw new Error('useAccessibility must be used within AccessibilityProvider');
+  if (!ctx)
+    throw new Error(
+      "useAccessibility must be used within AccessibilityProvider",
+    );
   return ctx;
 };
 
