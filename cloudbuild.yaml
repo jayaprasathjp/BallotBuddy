@@ -57,7 +57,6 @@ steps:
     waitFor: ['deploy-backend']
 
   # Step 2: Build the frontend image using BuildKit secret mount.
-  # The .vite_env file is injected as a secret – it does NOT become an
   # image layer and does NOT appear in docker history / docker inspect.
   - name: 'gcr.io/cloud-builders/docker'
     id: 'build-frontend'
