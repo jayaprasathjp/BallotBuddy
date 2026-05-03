@@ -74,9 +74,16 @@ WORKDIR /usr/share/nginx/html
 COPY --from=builder --chown=root:root --chmod=755 /app/dist ./
 COPY --chown=root:root --chmod=644 nginx.conf /etc/nginx/conf.d/default.conf
 
-# Drop to non-root user for the container metadata and any exec sessions.
-# The nginx master process itself starts as root to bind port 80, then
-# immediately forks workers as the "nginx" user (uid 101).
+# Grant nginx user write access to the runtime directories it needs at startup.
+# nginx:alpine runs as root by default so it can create /var/run/nginx.pid and
+# write to /var/cache/nginx. When we set USER nginx (uid=101), the process
+# starts as non-root and needs these paths pre-chowned.
+RUN mkdir -p /var/cache/nginx /var/run \
+ && chown -R nginx:nginx /var/cache/nginx /var/run \
+ && touch /var/run/nginx.pid \
+ && chown nginx:nginx /var/run/nginx.pid
+
+# Drop to non-root user. Port 8080 is non-privileged so nginx can bind it.
 USER nginx
 
 EXPOSE 8080
