@@ -261,7 +261,7 @@ const chat = async (userMessage, history = [], language = "en") => {
     return cached;
   }
 
-  return fetchChatFromApi(userMessage, history, language, cacheKey);
+  return await fetchChatFromApi(userMessage, history, language, cacheKey);
 };
 
 const generateMockComparison = (candidates) => {
@@ -319,7 +319,7 @@ const compareCandidates = async (candidates) => {
     return cached;
   }
 
-  return fetchComparisonFromApi(candidates, cacheKey);
+  return await fetchComparisonFromApi(candidates, cacheKey);
 };
 
 module.exports = { chat, compareCandidates, getMockStatus };

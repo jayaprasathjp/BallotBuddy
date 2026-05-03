@@ -179,7 +179,6 @@ export default function TimelinePage() {
         ) : (
           <ul
             className="calendar-grid"
-            role="list"
             aria-label="Election Calendar Grid"
           >
             {events.map((event) => {
