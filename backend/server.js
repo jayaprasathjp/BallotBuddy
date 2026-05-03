@@ -149,7 +149,7 @@ app.use("/auth", authRoutes);
 app.get("/health", (req, res) => {
   const { useMock, reason } = getMockStatus();
 
-  res.json({
+  return res.json({
     status: "healthy",
     service: "BallotBuddy API",
     version: process.env.npm_package_version || "1.0.0",
@@ -181,7 +181,7 @@ if (process.env.NODE_ENV === "production") {
   // browser always gets the latest entry point
   app.get("*", (req, res) => {
     res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-    res.sendFile(path.join(frontendBuild, "index.html"));
+    return res.sendFile(path.join(frontendBuild, "index.html"));
   });
 }
 
