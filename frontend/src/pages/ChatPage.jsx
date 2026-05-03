@@ -2,7 +2,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { chatApi } from "../services/api";
-import SkeletonLoader from "../components/SkeletonLoader";
 import "./ChatPage.css";
 
 const SUGGESTED_QUESTIONS = [

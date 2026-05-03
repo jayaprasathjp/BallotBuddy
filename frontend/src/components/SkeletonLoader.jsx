@@ -26,7 +26,6 @@ export default function SkeletonLoader({ type = "card", count = 1 }) {
             role="status"
             aria-label="Loading response"
           >
-          >
             <div
               className="skeleton skeleton-bubble"
               style={{ width: "80%" }}
