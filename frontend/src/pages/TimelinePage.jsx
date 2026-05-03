@@ -94,9 +94,8 @@ export default function TimelinePage() {
         </div>
 
         {view === "timeline" ? (
-          <div
+          <ol
             className="timeline-track"
-            role="list"
             aria-label="Election timeline events"
           >
             {events.map((event, index) => {
@@ -104,10 +103,9 @@ export default function TimelinePage() {
               const isReminderSet = remindersSet.has(event.id);
 
               return (
-                <div
+                <li
                   key={event.id}
                   className={`timeline-event ${event.completed ? "completed" : ""} ${event.current ? "current" : ""} ${event.important ? "important" : ""}`}
-                  role="listitem"
                   style={{ "--event-color": color }}
                   aria-label={`${event.title}: ${event.date}${event.completed ? ", completed" : ""}${event.current ? ", current" : ""}`}
                 >
@@ -174,10 +172,10 @@ export default function TimelinePage() {
                       </button>
                     )}
                   </div>
-                </div>
+                </li>
               );
             })}
-          </div>
+          </ol>
         ) : (
           <div
             className="calendar-grid"

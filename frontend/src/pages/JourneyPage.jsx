@@ -220,7 +220,7 @@ export default function JourneyPage() {
         </div>
 
         {/* Steps */}
-        <div className="journey-steps" role="list">
+        <ol className="journey-steps">
           {JOURNEY_STEPS.map((step, index) => {
             const isExpanded = expandedStep === step.id;
             const isCompleted = completedSteps.has(step.id);
@@ -228,10 +228,9 @@ export default function JourneyPage() {
               !isCompleted && (index === 0 || completedSteps.has(step.id - 1));
 
             return (
-              <div
+              <li
                 key={step.id}
                 className={`step-card ${isExpanded ? "expanded" : ""} ${isCompleted ? "completed" : ""} ${isCurrent ? "current" : ""}`}
-                role="listitem"
                 style={{ "--step-color": step.color }}
               >
                 <button
@@ -340,10 +339,10 @@ export default function JourneyPage() {
                     </button>
                   </div>
                 )}
-              </div>
+              </li>
             );
           })}
-        </div>
+        </ol>
       </div>
     </div>
   );

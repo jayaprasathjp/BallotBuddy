@@ -9,7 +9,7 @@ import PropTypes from "prop-types";
 
 const CandidateCard = ({ candidate, selected, onSelect, t }) => {
   return (
-    <div
+    <li
       role="option"
       className={`candidate-card card ${selected ? "selected" : ""}`}
       aria-selected={selected}
@@ -36,24 +36,23 @@ const CandidateCard = ({ candidate, selected, onSelect, t }) => {
         >
           {candidate.party}
         </div>
-        <div
+        <ul
           className="candidate-meta"
-          role="list"
           aria-label="Candidate details"
         >
-          <div role="listitem">
+          <li>
             <span className="meta-label">{t("candidates.education")}:</span>{" "}
             {candidate.education}
-          </div>
-          <div role="listitem">
+          </li>
+          <li>
             <span className="meta-label">{t("candidates.experience")}:</span>{" "}
             {candidate.experience}
-          </div>
-          <div role="listitem">
+          </li>
+          <li>
             <span className="meta-label">{t("candidates.assets")}:</span>{" "}
             {candidate.assets}
-          </div>
-          <div role="listitem">
+          </li>
+          <li>
             <span className="meta-label">
               {t("candidates.criminal_cases")}:
             </span>{" "}
@@ -64,8 +63,8 @@ const CandidateCard = ({ candidate, selected, onSelect, t }) => {
             >
               {candidate.criminalCases === 0 ? "None" : candidate.criminalCases}
             </span>
-          </div>
-        </div>
+          </li>
+        </ul>
         {(candidate.manifesto ?? []).length > 0 && (
           <div className="manifesto-chips">
             {(candidate.manifesto ?? []).slice(0, 3).map((item) => (
@@ -89,7 +88,7 @@ const CandidateCard = ({ candidate, selected, onSelect, t }) => {
       >
         {selected ? "✓ Selected" : "+ Compare"}
       </button>
-    </div>
+    </li>
   );
 };
 
@@ -207,12 +206,11 @@ export default function CandidatesPage() {
               🤖 {t("candidates.ai_comparison")}
             </h2>
             <p className="comparison-summary">{comparison.summary}</p>
-            <div className="comparison-cards" role="list">
+            <ul className="comparison-cards">
               {comparison.candidates?.map((c) => (
-                <div
+                <li
                   key={c.id}
                   className="compare-mini-card"
-                  role="listitem"
                   aria-label={`${c.name} comparison summary`}
                 >
                   <div
@@ -238,16 +236,15 @@ export default function CandidatesPage() {
                     <b>Cases:</b>{" "}
                     {c.criminalCases === 0 ? "None" : c.criminalCases}
                   </div>
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         )}
 
         {/* Candidate Grid */}
-        <div
+        <ul
           className="candidates-grid"
-          role="list"
           aria-label="All candidates"
         >
           {candidates.map((candidate) => (
@@ -259,7 +256,7 @@ export default function CandidatesPage() {
               t={t}
             />
           ))}
-        </div>
+        </ul>
       </div>
     </div>
   );

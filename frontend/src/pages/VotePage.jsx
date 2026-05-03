@@ -104,7 +104,7 @@ export default function VotePage() {
         </div>
 
         {/* Step Indicator */}
-        <div className="vote-steps" role="list" aria-label="Voting steps">
+        <ol className="vote-steps" aria-label="Voting steps">
           {["Select", "Confirm", "VVPAT", "Receipt"].map((s, i) => {
             const stepMap = {
               Select: "select",
@@ -118,19 +118,18 @@ export default function VotePage() {
             const isDone = thisIdx < currentIdx;
             const isCurrent = thisIdx === currentIdx;
             return (
-              <div
+              <li
                 key={s}
                 className={`vstep ${isDone ? "done" : ""} ${isCurrent ? "current" : ""}`}
-                role="listitem"
                 aria-current={isCurrent ? "step" : undefined}
               >
                 <div className="vstep-num">{isDone ? "✓" : i + 1}</div>
                 <span>{s}</span>
                 {i < 3 && <div className="vstep-line" aria-hidden="true" />}
-              </div>
+              </li>
             );
           })}
-        </div>
+        </ol>
 
         {/* Select Candidate */}
         {step === "select" && (

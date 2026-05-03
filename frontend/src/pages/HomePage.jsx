@@ -95,21 +95,20 @@ export default function HomePage() {
           </div>
 
           {/* Stats */}
-          <div
+          <ul
             className="stats-grid"
-            role="list"
             aria-label="Indian election statistics"
           >
             {STATS.map((stat) => (
-              <div key={stat.label} className="stat-card glass" role="listitem">
+              <li key={stat.label} className="stat-card glass">
                 <span className="stat-icon" aria-hidden="true">
                   {stat.icon}
                 </span>
                 <span className="stat-value gradient-text">{stat.value}</span>
                 <span className="stat-label">{stat.label}</span>
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
 
@@ -128,19 +127,18 @@ export default function HomePage() {
               democracy
             </p>
           </div>
-          <div className="features-grid" role="list">
+          <ul className="features-grid">
             {FEATURES.map((feature, i) => (
-              <Link
-                key={feature.titleKey}
-                to={feature.path}
-                className="feature-card card"
-                role="listitem"
-                aria-label={`${t(feature.titleKey)}: ${t(feature.descKey)}`}
-                style={{
-                  "--feature-color": feature.color,
-                  animationDelay: `${i * 0.1}s`,
-                }}
-              >
+              <li key={feature.titleKey} style={{ display: 'contents' }}>
+                <Link
+                  to={feature.path}
+                  className="feature-card card"
+                  aria-label={`${t(feature.titleKey)}: ${t(feature.descKey)}`}
+                  style={{
+                    "--feature-color": feature.color,
+                    animationDelay: `${i * 0.1}s`,
+                  }}
+                >
                 <div
                   className="feature-icon"
                   aria-hidden="true"
@@ -156,9 +154,10 @@ export default function HomePage() {
                 <span className="feature-arrow" aria-hidden="true">
                   →
                 </span>
-              </Link>
+                </Link>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
 

@@ -23,9 +23,15 @@ const LANG_INSTRUCTIONS = {
   ta: "\n\nIMPORTANT: Respond in Tamil language."
 };
 
+const getLanguageInstruction = (lang) => LANG_INSTRUCTIONS[lang] || "";
+const mapChatHistory = (history) => history.map((msg) => ({
+  role: msg.role,
+  parts: [{ text: msg.content }],
+}));
+
 // ─── Lazy-load Vertex AI SDK ─────────────────────────────────────────────────
 /** @type {typeof import('@google-cloud/vertexai').VertexAI | undefined} */
-let VertexAI = undefined;
+let VertexAI;
 try {
   const vertexModule = require("@google-cloud/vertexai");
   VertexAI = vertexModule.VertexAI;
@@ -189,6 +195,30 @@ const getMockStatus = () => {
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 /**
+ * Executes the Vertex AI SDK call and parses the response.
+ */
+const callVertexAI = async (userMessage, history, language) => {
+  const MODEL = process.env.VERTEX_AI_MODEL || "gemini-2.5-flash";
+  const vertexAI = getVertexClient();
+  const generativeModel = vertexAI.getGenerativeModel({
+    model: MODEL,
+    systemInstruction: {
+      role: "system",
+      parts: [{ text: ELECTION_SYSTEM_PROMPT }],
+    },
+    generationConfig: {
+      responseMimeType: "application/json",
+      temperature: 0.3,
+      maxOutputTokens: MAX_OUTPUT_TOKENS,
+    },
+  });
+
+  const chatSession = generativeModel.startChat({ history: mapChatHistory(history) });
+  const result = await chatSession.sendMessage(userMessage + getLanguageInstruction(language));
+  return JSON.parse(result.response.candidates[0].content.parts[0].text);
+};
+
+/**
  * Sends a chat message to Vertex AI Gemini and returns a structured response.
  * Responses are cached for 15 minutes by (message + language) to reduce
  * latency and Vertex AI API costs for repeated queries.
@@ -199,15 +229,9 @@ const getMockStatus = () => {
  * @returns {Promise<AIResponse>} Structured AI response object
  */
 const chat = async (userMessage, history = [], language = "en") => {
-  const MODEL = process.env.VERTEX_AI_MODEL || "gemini-2.5-flash";
   const { useMock, reason } = getMockStatus();
 
-  logger.debug("Vertex AI request", {
-    useMock,
-    reason,
-    language,
-    model: MODEL,
-  });
+  logger.debug("Vertex AI request", { useMock, reason, language });
 
   if (useMock) {
     logger.info("Using mock AI response", { reason });
@@ -219,45 +243,16 @@ const chat = async (userMessage, history = [], language = "en") => {
   const cacheKey = cache.makeKey("chat", userMessage, language);
   const cached = cache.get(cacheKey);
   if (cached) {
-    logger.info("Serving chat response from cache", { model: MODEL });
+    logger.info("Serving chat response from cache");
     return cached;
   }
 
   try {
-    const vertexAI = getVertexClient();
-    const generativeModel = vertexAI.getGenerativeModel({
-      model: MODEL,
-      systemInstruction: {
-        role: "system",
-        parts: [{ text: ELECTION_SYSTEM_PROMPT }],
-      },
-      generationConfig: {
-        responseMimeType: "application/json",
-        temperature: 0.3,
-        maxOutputTokens: MAX_OUTPUT_TOKENS,
-      },
-    });
-
-    // Map conversation history to Vertex AI format
-    const chatHistory = history.map((msg) => ({
-      role: msg.role,
-      parts: [{ text: msg.content }],
-    }));
-
-    const languageInstruction = LANG_INSTRUCTIONS[language] || "";
-
-    const chatSession = generativeModel.startChat({ history: chatHistory });
-    const result = await chatSession.sendMessage(
-      userMessage + languageInstruction,
-    );
-    const responseText = result.response.candidates[0].content.parts[0].text;
-
-    const parsed = JSON.parse(responseText);
-    logger.info("Vertex AI response received", { model: MODEL });
-
+    const parsed = await callVertexAI(userMessage, history, language);
+    logger.info("Vertex AI response received");
+    
     // Cache the successful response
     cache.set(cacheKey, parsed);
-
     return parsed;
   } catch (error) {
     logger.error("Vertex AI error – falling back to mock", {
