@@ -4,7 +4,6 @@
  * Initializes Firebase Admin SDK once using environment credentials.
  */
 const { Firestore } = require('@google-cloud/firestore');
-const logger = require('./logger');
 
 // Initialize Firestore (Native Google Cloud SDK)
 const db = new Firestore({

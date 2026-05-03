@@ -2,7 +2,7 @@ const express = require('express');
 const { validators } = require('../middleware/validate');
 const { createDoc, queryDocs } = require('../services/firestore');
 const logger = require('../services/logger');
-const crypto = require('crypto'); // We would use bcrypt in a real app, but crypto is built-in
+const cryptoModule = require('crypto'); // We would use bcrypt in a real app, but crypto is built-in
 
 const router = express.Router();
 
@@ -10,7 +10,7 @@ const router = express.Router();
  * Hash password helper
  */
 const hashPassword = (password) => {
-  return crypto.createHash('sha256').update(password).digest('hex');
+  return cryptoModule.createHash('sha256').update(password).digest('hex');
 };
 
 /**
@@ -46,13 +46,13 @@ router.post('/register', validators.register, async (req, res) => {
     // Exclude password from response
     const { password: _, ...safeUser } = user;
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       data: safeUser,
     });
   } catch (error) {
     logger.error('Registration error', { error: error.message });
-    res.status(500).json({ success: false, error: 'Failed to register user' });
+    return res.status(500).json({ success: false, error: 'Failed to register user' });
   }
 });
 
@@ -90,13 +90,13 @@ router.post('/login', validators.login, async (req, res) => {
     // Exclude password from response
     const { password: _, ...safeUser } = user;
 
-    res.json({
+    return res.json({
       success: true,
       data: safeUser,
     });
   } catch (error) {
     logger.error('Login error', { error: error.message });
-    res.status(500).json({ success: false, error: 'Failed to login' });
+    return res.status(500).json({ success: false, error: 'Failed to login' });
   }
 });
 

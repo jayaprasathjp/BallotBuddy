@@ -59,7 +59,7 @@ router.get('/history', optionalGuest, async (req, res) => {
   try {
     const history = await queryDocs('chatHistory', 'userId', '==', req.guestId);
     res.json({ success: true, history: history.slice(-MAX_HISTORY_ITEMS) }); // Last MAX_HISTORY_ITEMS messages
-  } catch (error) {
+  } catch {
     res.status(500).json({ success: false, error: 'Failed to retrieve history.' });
   }
 });

@@ -179,7 +179,7 @@ app.use((err, req, res, next) => {
     return res.status(403).json({ success: false, error: 'CORS policy violation.' });
   }
 
-  res.status(err.status || 500).json({
+  return res.status(err.status || 500).json({
     success: false,
     error: process.env.NODE_ENV === 'production' ? 'Internal server error.' : err.message,
   });
@@ -187,7 +187,7 @@ app.use((err, req, res, next) => {
 
 // 404 handler for unknown API routes
 app.use('/api/*', (req, res) => {
-  res.status(404).json({ success: false, error: `Route ${req.method} ${req.path} not found.` });
+  return res.status(404).json({ success: false, error: `Route ${req.method} ${req.path} not found.` });
 });
 
 // ─────────────────────────────────────────

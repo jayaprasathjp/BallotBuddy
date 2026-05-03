@@ -23,7 +23,7 @@ const COMPARE_CACHE_TTL_MS = 30 * 60 * 1000;
 let VertexAI;
 try {
   ({ VertexAI } = require('@google-cloud/vertexai'));
-} catch (e) {
+} catch {
   logger.warn('Vertex AI SDK not available – falling back to mock mode');
 }
 
