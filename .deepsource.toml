@@ -1,0 +1,17 @@
+version = 1
+
+[[transformers]]
+name = "prettier"
+
+[[analyzers]]
+name = "javascript"
+enabled = true
+
+  [analyzers.meta]
+  module_system = "esmodules"
+  jsx = true
+  environment = ["browser", "nodejs"]
+
+[[analyzers]]
+name = "test-coverage"
+enabled = true

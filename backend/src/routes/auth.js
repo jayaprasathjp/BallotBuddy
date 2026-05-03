@@ -2,7 +2,7 @@ const express = require("express");
 const { validators } = require("../middleware/validate");
 const { createDoc, queryDocs } = require("../services/firestore");
 const logger = require("../services/logger");
-const cryptoModule = require("crypto"); // We would use bcrypt in a real app, but crypto is built-in
+const cryptoModule = require("node:crypto"); // We would use bcrypt in a real app, but crypto is built-in
 
 const router = express.Router();
 
@@ -17,7 +17,7 @@ const hashPassword = (password) => {
  * POST /api/auth/register
  * Register a new user
  */
-router.post("/register", validators.register, async (req, res) => {
+router.post("/register", validators.register, async function (req, res) {
   try {
     const { email, password, name } = req.body;
 
@@ -51,7 +51,8 @@ router.post("/register", validators.register, async (req, res) => {
     logger.info("User registered successfully", { userId: user.id });
 
     // Exclude password from response
-    const { password: _, ...safeUser } = user;
+    const safeUser = { ...user };
+    delete safeUser.password;
 
     return res.status(201).json({
       success: true,
@@ -69,7 +70,7 @@ router.post("/register", validators.register, async (req, res) => {
  * POST /api/auth/login
  * Authenticate a user
  */
-router.post("/login", validators.login, async (req, res) => {
+router.post("/login", validators.login, async function (req, res) {
   try {
     const { email, password } = req.body;
 
@@ -101,7 +102,8 @@ router.post("/login", validators.login, async (req, res) => {
     logger.info("User logged in successfully", { userId: user.id });
 
     // Exclude password from response
-    const { password: _, ...safeUser } = user;
+    const safeUser = { ...user };
+    delete safeUser.password;
 
     return res.json({
       success: true,

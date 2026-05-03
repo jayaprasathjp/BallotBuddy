@@ -38,7 +38,7 @@ let _vertexClient = null;
  * @returns {import('@google-cloud/vertexai').VertexAI}
  */
 const getVertexClient = () => {
-  if (!_vertexClient) {
+  if (_vertexClient === null || _vertexClient === undefined) {
     _vertexClient = new VertexAI({
       project: process.env.GOOGLE_CLOUD_PROJECT,
       location: process.env.VERTEX_AI_LOCATION || "us-central1",
@@ -168,9 +168,12 @@ const getMockResponse = (userMessage) => {
  * @returns {{ useMock: boolean, reason: string }}
  */
 const getMockStatus = () => {
-  if (!process.env.GOOGLE_CLOUD_PROJECT)
+  if (process.env.GOOGLE_CLOUD_PROJECT === undefined || process.env.GOOGLE_CLOUD_PROJECT === null || process.env.GOOGLE_CLOUD_PROJECT === "") {
     return { useMock: true, reason: "No Project ID configured" };
-  if (!VertexAI) return { useMock: true, reason: "Vertex AI SDK not loaded" };
+  }
+  if (VertexAI === undefined || VertexAI === null) {
+    return { useMock: true, reason: "Vertex AI SDK not loaded" };
+  }
   if (process.env.USE_MOCK_AI === "true")
     return { useMock: true, reason: "Forced by USE_MOCK_AI env var" };
   return { useMock: false, reason: "Live AI enabled" };
@@ -234,10 +237,12 @@ const chat = async (userMessage, history = [], language = "en") => {
       parts: [{ text: msg.content }],
     }));
 
-    const languageInstruction =
-      language !== "en"
-        ? `\n\nIMPORTANT: Respond in ${language === "hi" ? "Hindi" : "Tamil"} language.`
-        : "";
+    let languageInstruction = "";
+    if (language === "hi") {
+      languageInstruction = "\n\nIMPORTANT: Respond in Hindi language.";
+    } else if (language !== "en") {
+      languageInstruction = "\n\nIMPORTANT: Respond in Tamil language.";
+    }
 
     const chatSession = generativeModel.startChat({ history: chatHistory });
     const result = await chatSession.sendMessage(

@@ -23,7 +23,7 @@ api.interceptors.response.use(
     if (err.response?.status === 401) {
       localStorage.removeItem("ballotbuddy_token");
       localStorage.removeItem("ballotbuddy_user");
-      window.location.href = "/";
+      globalThis.location.href = "/";
     }
     return Promise.reject(err);
   },

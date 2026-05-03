@@ -15,10 +15,10 @@ const SUGGESTED_QUESTIONS = [
 // Individual AI response component
 const AIResponseCard = ({ response, t }) => {
   const speak = (text) => {
-    if ("speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
+    if ("speechSynthesis" in globalThis) {
+      globalThis.speechSynthesis.cancel();
       const utt = new SpeechSynthesisUtterance(text);
-      window.speechSynthesis.speak(utt);
+      globalThis.speechSynthesis.speak(utt);
     }
   };
 
@@ -195,13 +195,13 @@ export default function ChatPage() {
 
   const startVoiceInput = () => {
     if (
-      !("webkitSpeechRecognition" in window || "SpeechRecognition" in window)
+      !("webkitSpeechRecognition" in globalThis || "SpeechRecognition" in globalThis)
     ) {
       setError("Voice input not supported in your browser.");
       return;
     }
     const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
+      globalThis.SpeechRecognition || globalThis.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
     recognitionRef.current = recognition;
     recognition.lang =

@@ -17,7 +17,7 @@ const express = require("express");
 const compression = require("compression");
 const helmet = require("helmet");
 const cors = require("cors");
-const path = require("path");
+const path = require("node:path");
 
 const logger = require("./src/services/logger");
 const { generalLimiter } = require("./src/middleware/rateLimiter");
@@ -74,9 +74,10 @@ app.use(
 );
 
 // CORS configuration
-const allowedOrigins = (process.env.ALLOWED_ORIGINS || "http://localhost:5173")
+const allowedOriginsList = (process.env.ALLOWED_ORIGINS || "http://localhost:5173")
   .split(",")
   .map((o) => o.trim());
+const allowedOrigins = new Set(allowedOriginsList);
 
 app.use(
   cors({
@@ -84,8 +85,8 @@ app.use(
       // Allow if origin is in the list, or if the list contains '*'
       if (
         !origin ||
-        allowedOrigins.includes("*") ||
-        allowedOrigins.includes(origin)
+        allowedOrigins.has("*") ||
+        allowedOrigins.has(origin)
       ) {
         callback(null, true);
       } else {
@@ -115,7 +116,7 @@ app.use("/api", generalLimiter);
 // ─────────────────────────────────────────
 // Request Logger
 // ─────────────────────────────────────────
-app.use((req, res, next) => {
+app.use(function (req, res, next) {
   const start = Date.now();
   res.on("finish", () => {
     logger.info("HTTP Request", {
@@ -179,7 +180,7 @@ if (process.env.NODE_ENV === "production") {
 
   // SPA fallback – always return index.html with no-cache so the
   // browser always gets the latest entry point
-  app.get("*", (req, res) => {
+  app.get("*", function (req, res) {
     res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
     return res.sendFile(path.join(frontendBuild, "index.html"));
   });
@@ -189,7 +190,7 @@ if (process.env.NODE_ENV === "production") {
 // Global Error Handler
 // ─────────────────────────────────────────
 // eslint-disable-next-line no-unused-vars
-app.use((err, req, res, next) => {
+app.use(function (err, req, res, next) {
   logger.error("Unhandled error", { error: err.message, stack: err.stack });
 
   if (err.message === "Not allowed by CORS") {
@@ -208,7 +209,7 @@ app.use((err, req, res, next) => {
 });
 
 // 404 handler for unknown API routes
-app.use("/api/*", (req, res) => {
+app.use("/api/*", function (req, res) {
   return res
     .status(404)
     .json({

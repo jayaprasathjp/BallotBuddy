@@ -32,7 +32,7 @@ export default function TimelinePage() {
       if (fcmToken) {
         await timelineApi.scheduleReminder(eventId, fcmToken);
         // Show browser notification if supported as local fallback/confirmation
-        if ("Notification" in window && Notification.permission === "granted") {
+        if ("Notification" in globalThis && Notification.permission === "granted") {
           new Notification("🗳️ BallotBuddy Reminder Set!", {
             body: `You will be reminded about this election event.`,
             icon: "/vite.svg",

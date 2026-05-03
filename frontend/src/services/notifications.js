@@ -17,7 +17,7 @@ const app = initializeApp(gcpConfig);
 
 export const requestNotificationPermission = async () => {
   try {
-    if (!("Notification" in window)) return null;
+    if (!("Notification" in globalThis)) return null;
     const permission = await Notification.requestPermission();
     if (permission === "granted") {
       const messaging = getMessaging(app);
