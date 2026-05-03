@@ -76,6 +76,16 @@ RUN chown -R nginx:nginx /usr/share/nginx/html /etc/nginx/conf.d
 COPY --from=builder --chown=nginx:nginx /app/dist ./
 COPY --chown=nginx:nginx nginx.conf /etc/nginx/conf.d/default.conf
 
+# Enforce read-only permissions on all copied resources.
+# Static assets (HTML/JS/CSS) and the nginx config are never written
+# at runtime; removing write bits prevents any compromised worker
+# process from modifying served content or config.
+#   444 = rw-r--r-- → stripped to r--r--r-- (files)
+#   555 = r-xr-xr-x (directories need execute to be traversed)
+RUN find /usr/share/nginx/html -type f -exec chmod 444 {} \; \
+ && find /usr/share/nginx/html -type d -exec chmod 555 {} \; \
+ && chmod 444 /etc/nginx/conf.d/default.conf
+
 # Drop to non-root user for the container metadata and any exec sessions.
 # The nginx master process itself starts as root to bind port 80, then
 # immediately forks workers as the "nginx" user (uid 101).
