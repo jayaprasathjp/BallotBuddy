@@ -68,23 +68,22 @@ RUN VITE_API_URL=$VITE_API_URL \
 FROM nginx:alpine
 WORKDIR /usr/share/nginx/html
 
-# Harden file ownership before dropping privileges
-RUN chown -R nginx:nginx /usr/share/nginx/html /etc/nginx/conf.d
-
-# Copy only the compiled static assets from the builder stage –
-# no source code, no secrets, no node_modules ever reach this image.
-COPY --from=builder --chown=nginx:nginx /app/dist ./
-COPY --chown=nginx:nginx nginx.conf /etc/nginx/conf.d/default.conf
-
-# Enforce read-only permissions on all copied resources.
-# Static assets (HTML/JS/CSS) and the nginx config are never written
-# at runtime; removing write bits prevents any compromised worker
-# process from modifying served content or config.
-#   444 = rw-r--r-- → stripped to r--r--r-- (files)
-#   555 = r-xr-xr-x (directories need execute to be traversed)
-RUN find /usr/share/nginx/html -type f -exec chmod 444 {} \; \
- && find /usr/share/nginx/html -type d -exec chmod 555 {} \; \
- && chmod 444 /etc/nginx/conf.d/default.conf
+# Copy compiled static assets with root ownership and restricted permissions.
+#
+# SECURITY NOTE – --chown=root:root --chmod:
+#   Root owns all files; nginx worker processes (uid 101) have read-only
+#   access via the group/other bits. Only root can write, satisfying the
+#   container immutability principle and SonarCloud S2612/RSPEC-7466.
+#
+#   dist files  → --chmod=755 (rwxr-xr-x)
+#     Directories need the execute bit for traversal; files served by
+#     nginx only need read, but BuildKit's --chmod applies one mask to
+#     all copied paths. 755 = root writes, everyone reads/traverses.
+#
+#   nginx.conf  → --chmod=644 (rw-r--r--)
+#     Config file; no execute needed. Root can update it; nginx reads it.
+COPY --from=builder --chown=root:root --chmod=755 /app/dist ./
+COPY --chown=root:root --chmod=644 nginx.conf /etc/nginx/conf.d/default.conf
 
 # Drop to non-root user for the container metadata and any exec sessions.
 # The nginx master process itself starts as root to bind port 80, then
