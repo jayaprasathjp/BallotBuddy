@@ -1,21 +1,48 @@
-# Secrets – never copy into the image
+# ============================================================
+# Backend .dockerignore
+# Prevents sensitive, dev-only, and generated files from
+# entering the Docker build context – defence-in-depth layer
+# on top of the selective COPY directives in the Dockerfile.
+# ============================================================
+
+# --- Secrets (CRITICAL) ---
 .env
 *.env
+*.env.*
+.env.local
+.env.*.local
 service-account.json
 *.json.key
+*.pem
+*.key
+*.p12
+*.pfx
 
-# Dev tooling
+# --- Test scratch files at root level ---
+test-*.js
+*.test.js
+*.spec.js
+jest.setup.js
+
+# --- Dev tooling ---
 node_modules
 npm-debug.log*
 *.log
 
-# Tests and CI
+# --- Tests and CI artefacts ---
 src/__tests__
 coverage
 .nyc_output
 
-# Editor artifacts
+# --- Git ---
+.git
+.gitignore
+.gitattributes
+
+# --- Editor & OS ---
 .vscode
 .idea
 *.suo
 *.sln
+.DS_Store
+Thumbs.db

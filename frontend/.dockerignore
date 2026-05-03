@@ -1,21 +1,41 @@
-# Secrets – never copy into the image
+# ============================================================
+# Frontend .dockerignore
+# Prevents sensitive, dev-only, and generated files from
+# entering the Docker build context.
+# ============================================================
+
+# --- Secrets (CRITICAL) ---
 .env
 *.env
+*.env.*
+.env.local
+.env.*.local
+*.pem
+*.key
+*.p12
+*.pfx
 
-# Build output (nginx stage copies /app/dist directly)
+# --- Build output (nginx stage copies /app/dist from builder) ---
 dist
 
-# Dev tooling
+# --- Dev tooling ---
 node_modules
 npm-debug.log*
 *.log
 
-# Tests
+# --- Tests and coverage ---
 src/__tests__
 coverage
 
-# Editor artifacts
+# --- Git ---
+.git
+.gitignore
+.gitattributes
+
+# --- Editor & OS ---
 .vscode
 .idea
 *.suo
 *.sln
+.DS_Store
+Thumbs.db

@@ -10,10 +10,13 @@ WORKDIR /app
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 COPY --from=builder /app/node_modules ./node_modules
-COPY . .
 
-# Remove test files from production image
-RUN rm -rf src/__tests__
+# Selective COPY: only production source is included.
+# Sensitive files (.env, service-account.json, *.key) are excluded via .dockerignore.
+# Test scratch files (test-*.js) are listed explicitly so nothing sensitive
+# can slip in through a future recursive glob.
+COPY server.js .
+COPY src/ ./src/
 
 RUN chown -R appuser:appgroup /app
 USER appuser
