@@ -27,6 +27,7 @@ const chatRoutes = require('./src/routes/chat');
 const candidatesRoutes = require('./src/routes/candidates');
 const timelineRoutes = require('./src/routes/timeline');
 const votingRoutes = require('./src/routes/voting');
+const authRoutes = require('./src/routes/auth');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -121,12 +122,14 @@ app.use('/api/chat', chatRoutes);
 app.use('/api/candidates', candidatesRoutes);
 app.use('/api/timeline', timelineRoutes);
 app.use('/api/vote', votingRoutes);
+app.use('/api/auth', authRoutes);
 
 // Backward-compat aliases – handles frontend built without /api prefix
 app.use('/chat', chatRoutes);
 app.use('/candidates', candidatesRoutes);
 app.use('/timeline', timelineRoutes);
 app.use('/vote', votingRoutes);
+app.use('/auth', authRoutes);
 
 // Health check endpoint (required for Cloud Run)
 app.get('/health', (req, res) => {

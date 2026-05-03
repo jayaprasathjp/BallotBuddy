@@ -78,8 +78,8 @@ COPY --chown=root:root --chmod=644 nginx.conf /etc/nginx/conf.d/default.conf
 # nginx:alpine runs as root by default so it can create /var/run/nginx.pid and
 # write to /var/cache/nginx. When we set USER nginx (uid=101), the process
 # starts as non-root and needs these paths pre-chowned.
-RUN mkdir -p /var/cache/nginx /var/run \
- && chown -R nginx:nginx /var/cache/nginx /var/run \
+RUN mkdir -p /var/cache/nginx /var/run /var/log/nginx \
+ && chown -R nginx:nginx /var/cache/nginx /var/run /var/log/nginx \
  && touch /var/run/nginx.pid \
  && chown nginx:nginx /var/run/nginx.pid
 
