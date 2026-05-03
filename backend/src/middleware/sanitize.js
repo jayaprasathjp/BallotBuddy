@@ -4,8 +4,8 @@
  */
 const { JSDOM } = require("jsdom");
 const createDOMPurify = require("dompurify");
-const { window } = new JSDOM("");
-const dompurify = createDOMPurify(window);
+const { window: jsdomWindow } = new JSDOM("");
+const dompurify = createDOMPurify(jsdomWindow);
 
 const sanitizeObject = (obj) => {
   if (typeof obj === "string") {
