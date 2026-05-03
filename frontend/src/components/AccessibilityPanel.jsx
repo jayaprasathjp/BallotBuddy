@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useAccessibility } from "../context/AccessibilityContext";
 import "./AccessibilityPanel.css";
 
-export default function AccessibilityPanel() {
+const AccessibilityPanel = () => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const {
