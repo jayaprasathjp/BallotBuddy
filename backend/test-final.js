@@ -14,7 +14,7 @@ async function test() {
   const url = `https://us-central1-aiplatform.googleapis.com/v1/projects/${projectId}/locations/us-central1/publishers/google/models/gemini-2.5-flash:generateContent`;
 
   try {
-    const response = await axios.post(url, {
+    await axios.post(url, {
       contents: [{ role: 'user', parts: [{ text: 'Hello' }] }]
     }, {
       headers: { Authorization: `Bearer ${token.token}` }

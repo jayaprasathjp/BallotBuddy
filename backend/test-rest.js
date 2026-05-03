@@ -25,7 +25,7 @@ async function testRest() {
   try {
     const logger = require('./src/services/logger');
     logger.info('Calling REST API', { model, location });
-    const response = await axios.post(url, payload, {
+    await axios.post(url, payload, {
       headers: {
         Authorization: `Bearer ${accessToken.token}`,
         'Content-Type': 'application/json'

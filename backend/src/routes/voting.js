@@ -6,7 +6,7 @@
 const express = require('express');
 const router = express.Router();
 const { v4: uuidv4 } = require('uuid');
-const { randomInt } = require('crypto'); // CSPRNG – safe for unpredictable identifiers
+const { randomInt } = require('node:crypto'); // CSPRNG – safe for unpredictable identifiers
 
 const { validators } = require('../middleware/validate');
 const { sanitizeBody } = require('../middleware/sanitize');
