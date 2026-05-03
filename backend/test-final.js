@@ -19,9 +19,11 @@ async function test() {
     }, {
       headers: { Authorization: `Bearer ${token.token}` }
     });
-    console.log('SUCCESS:', JSON.stringify(response.data, null, 2));
+    const logger = require('./src/services/logger');
+    logger.info('Final test successful');
   } catch (error) {
-    console.log('FAIL:', error.response?.data?.error?.message || error.message);
+    const logger = require('./src/services/logger');
+    logger.error('Final test failed', { error: error.response?.data?.error?.message || error.message });
   }
 }
 test();

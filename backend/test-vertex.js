@@ -6,8 +6,7 @@ const test = async () => {
   const PROJECT_ID = '442722843230';
   const LOCATION = 'us-central1';
   
-  console.log('Project:', PROJECT_ID);
-  console.log('Location:', LOCATION);
+  logger.info('Starting Vertex AI test', { project: PROJECT_ID, location: LOCATION });
   
   try {
     const vertexAI = new VertexAI({ project: PROJECT_ID, location: LOCATION });
@@ -15,12 +14,11 @@ const test = async () => {
       model: 'gemini-1.5-flash',
     });
     
-    console.log('Calling Vertex AI...');
+    logger.info('Calling Vertex AI...');
     const result = await generativeModel.generateContent('Hello');
-    console.log('Response:', result.response.candidates[0].content.parts[0].text);
+    logger.info('Vertex AI Response received', { text: result.response.candidates[0].content.parts[0].text });
   } catch (error) {
-    console.error('Error:', error.message);
-    if (error.stack) console.error(error.stack);
+    logger.error('Vertex AI test failed', { error: error.message, stack: error.stack });
   }
 };
 

@@ -36,7 +36,7 @@ export default function TimelinePage() {
         }
       }
     } catch (err) {
-      console.error('Failed to schedule reminder', err);
+      if (import.meta.env.DEV) console.error('Failed to schedule reminder', err);
     }
   };
 

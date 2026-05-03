@@ -8,11 +8,12 @@ async function testFirestore() {
       projectId: process.env.GOOGLE_CLOUD_PROJECT
     });
     
-    console.log('Checking Firestore for project:', process.env.GOOGLE_CLOUD_PROJECT);
+    const logger = require('./src/services/logger');
     const collections = await db.listCollections();
-    console.log('Success! Found collections:', collections.map(c => c.id));
+    logger.info('Firestore connection successful', { collections: collections.map(c => c.id) });
   } catch (error) {
-    console.error('Firestore Error:', error.message);
+    const logger = require('./src/services/logger');
+    logger.error('Firestore connection failed', { error: error.message });
   }
 }
 

@@ -23,20 +23,21 @@ async function testRest() {
   };
 
   try {
-    console.log(`Calling REST API for ${model} in ${location}...`);
+    const logger = require('./src/services/logger');
+    logger.info('Calling REST API', { model, location });
     const response = await axios.post(url, payload, {
       headers: {
         Authorization: `Bearer ${accessToken.token}`,
         'Content-Type': 'application/json'
       }
     });
-    console.log('Success! Response received.');
-    console.log('AI:', response.data[0].candidates[0].content.parts[0].text);
+    logger.info('REST API call successful');
   } catch (error) {
-    console.error('REST Error:', error.response?.data?.error?.message || error.message);
-    if (error.response?.data) {
-      console.log('Full Error:', JSON.stringify(error.response.data, null, 2));
-    }
+    const logger = require('./src/services/logger');
+    logger.error('REST API test failed', { 
+      error: error.response?.data?.error?.message || error.message,
+      details: error.response?.data 
+    });
   }
 }
 

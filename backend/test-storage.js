@@ -8,11 +8,13 @@ async function testStorage() {
       projectId: process.env.GOOGLE_CLOUD_PROJECT
     });
     
-    console.log('Checking Cloud Storage for project:', process.env.GOOGLE_CLOUD_PROJECT);
+    const logger = require('./src/services/logger');
+    logger.info('Checking Cloud Storage', { project: process.env.GOOGLE_CLOUD_PROJECT });
     const [buckets] = await storage.getBuckets();
-    console.log('Success! Found buckets:', buckets.map(b => b.name));
+    logger.info('Cloud Storage connection successful', { buckets: buckets.map(b => b.name) });
   } catch (error) {
-    console.error('Storage Error:', error.message);
+    const logger = require('./src/services/logger');
+    logger.error('Cloud Storage connection failed', { error: error.message });
   }
 }
 

@@ -15,15 +15,17 @@ async function listModels() {
   const url = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models`;
 
   try {
-    console.log(`Checking models in ${location}...`);
+    const logger = require('./src/services/logger');
+    logger.info('Listing Vertex AI models', { location });
     const response = await axios.get(url, {
       headers: {
         Authorization: `Bearer ${accessToken.token}`
       }
     });
-    console.log('Available Models:', response.data.models.map(m => m.name.split('/').pop()));
+    logger.info('Available Models fetched', { models: response.data.models.map(m => m.name.split('/').pop()) });
   } catch (error) {
-    console.error('Error listing models:', error.response?.data?.error?.message || error.message);
+    const logger = require('./src/services/logger');
+    logger.error('Error listing models', { error: error.response?.data?.error?.message || error.message });
   }
 }
 

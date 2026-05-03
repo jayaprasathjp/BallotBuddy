@@ -23,14 +23,14 @@ export const requestNotificationPermission = async () => {
       const currentToken = await getToken(messaging, {
         vapidKey: import.meta.env.VITE_GCP_VAPID_KEY || 'mock-vapid-key'
       }).catch(err => {
-        console.warn('FCM token fetch failed (dev mode):', err);
+        if (import.meta.env.DEV) console.warn('FCM token fetch failed:', err);
         return 'mock-fcm-token-' + Date.now();
       });
       return currentToken;
     }
     return null;
   } catch (error) {
-    console.error('Notification permission error:', error);
+    if (import.meta.env.DEV) console.error('Notification permission error:', error);
     return 'mock-fcm-token-fallback';
   }
 };
@@ -44,7 +44,7 @@ export const onMessageListener = () => {
       });
     });
   } catch (err) {
-    console.warn('FCM message listener error:', err);
+    if (import.meta.env.DEV) console.warn('FCM message listener error:', err);
     return new Promise(() => {});
   }
 };

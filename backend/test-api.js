@@ -8,11 +8,11 @@ async function testApi() {
     }, {
       headers: { 'x-guest-id': 'test-user-123' }
     });
-    
-    console.log('API Status:', response.status);
-    console.log('AI Response:', JSON.stringify(response.data, null, 2));
+    const logger = require('./src/services/logger');
+    logger.info('API test successful', { status: response.status, data: response.data });
   } catch (error) {
-    console.error('API Error:', error.response?.data || error.message);
+    const logger = require('./src/services/logger');
+    logger.error('API test failed', { error: error.response?.data || error.message });
   }
 }
 
